@@ -4,12 +4,9 @@ import com.example.ChatApp.dto.ClientResponseDTO;
 import com.example.ChatApp.dto.LoginRequestDTO;
 import com.example.ChatApp.dto.RegisterRequestDTO;
 import com.example.ChatApp.service.ClientService;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
-@Controller
+@RestController
 @RequestMapping("/auth")
 public class ClientController {
     //Criar Rota para autenticacao e registro;
