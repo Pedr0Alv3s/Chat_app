@@ -1,6 +1,8 @@
 package com.example.ChatApp.service;
 
 import com.example.ChatApp.dto.CreateSalaRequestDTO;
+import com.example.ChatApp.dto.InviteRequestDTO;
+import com.example.ChatApp.dto.InviteResponseDTO;
 import com.example.ChatApp.dto.SalaResponseDTO;
 import com.example.ChatApp.model.Client;
 import com.example.ChatApp.model.Sala;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class SalaService {
@@ -42,5 +45,33 @@ public class SalaService {
         return response;
     }
 
+    //Metodo de convite para salas;
+    public InviteResponseDTO invite(InviteRequestDTO dto,Long salaId){
+        Optional<Client> optionalClient = clientRepository.findByName(dto.getName());
+        if(optionalClient.isEmpty()){
+            throw new RuntimeException("Usuário não encontrado");
+        }
+
+        //procura sala por id recebido (provavelmente desnecessario)
+        Sala sala = salaRepository.findById(salaId).orElseThrow();
+
+        Client invitedClient = optionalClient.get();
+
+        // evitar duplicação
+        if (sala.getClient_list().contains(invitedClient)) {
+            throw new RuntimeException("Usuário já está na sala");
+        }
+
+        // adicionar usuário na sala
+        sala.getClient_list().add(invitedClient);
+
+        // Construção da resposta e salvamento no BD;
+        salaRepository.save(sala);
+        InviteResponseDTO response = new InviteResponseDTO();
+        response.setSala_id(salaId);
+        response.setName(invitedClient.getName());
+
+        return response;
+    }
 
 }

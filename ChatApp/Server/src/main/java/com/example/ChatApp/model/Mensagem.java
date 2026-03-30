@@ -12,7 +12,7 @@ public class Mensagem {
     private Long id;
 
     @Column(nullable = false, length = 20)
-    private Long user_id;
+    private Long client_id;
 
     @Column(nullable = false,length = 20)
     private Long sala_id;
