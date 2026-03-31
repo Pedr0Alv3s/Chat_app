@@ -29,5 +29,5 @@ public class Client {
     private String name;
 
     @ManyToMany(mappedBy = "client_list")
-    private List<Sala> salaList;
+    private List<Sala> salaList;            //Lista de salas da qual o usuário tem acesso;
 }

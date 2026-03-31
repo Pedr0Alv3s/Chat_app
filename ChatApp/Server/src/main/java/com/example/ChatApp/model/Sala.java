@@ -31,5 +31,5 @@ public class Sala {
             joinColumns = @JoinColumn(name = "sala_id"),
             inverseJoinColumns = @JoinColumn(name = "client_id")
     )
-    private List<Client> client_list;
+    private List<Client> client_list;       //Lista de usuários que estão na sala;
 }

@@ -1,4 +1,4 @@
-package com.example.ChatApp.dto;
+package com.example.ChatApp.dto.roomOp;
 
 import lombok.Getter;
 import lombok.Setter;
