@@ -5,7 +5,7 @@ import com.example.ChatApp.dto.ClientResponseDTO;
 import com.example.ChatApp.dto.RegisterRequestDTO;
 import com.example.ChatApp.model.Client;
 import com.example.ChatApp.repository.ClientRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.ChatApp.security.JwtService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
@@ -14,14 +14,19 @@ import java.util.Optional;
 public class ClientService {
 
     // Criação de objetos Client repository ( irá fazer o contato com o banco)
-    @Autowired
     ClientRepository clientRepository;
     // Criação do objeto PasswordEncoder , responsavel por fazer o hash das senhas;
-    @Autowired
     PasswordEncoder passwordEncoder;
+    // Objeto jwtService;
+    JwtService jwtService;
 
-    public ClientService(ClientRepository clientRepository){
+    //Metodo construtor da classe;
+    public ClientService(ClientRepository clientRepository,
+                         PasswordEncoder passwordEncoder,
+                         JwtService jwtService){
         this.clientRepository = clientRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
 
     // metodo de login
@@ -33,6 +38,7 @@ public class ClientService {
 
         Client client = optionalClient.get();
 
+        String token = jwtService.generateToken(client.getId());
         // validar senha
         if (!passwordEncoder.matches(dto.getPassword(), client.getPassword())) {
             throw new RuntimeException("Senha inválida");
@@ -43,9 +49,11 @@ public class ClientService {
         response.setId(client.getId());
         response.setName(client.getName());
         response.setEmail(client.getEmail());
+        response.setToken(token);
 
         return response;
     }
+
     // metodo de registro
     public ClientResponseDTO register(RegisterRequestDTO dto) {
         //verificação se cadastro ja existe;

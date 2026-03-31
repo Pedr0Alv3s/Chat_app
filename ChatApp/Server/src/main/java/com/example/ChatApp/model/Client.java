@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -25,4 +27,7 @@ public class Client {
 
     @Column(name = "name", nullable = false, length = 20)
     private String name;
+
+    @ManyToMany(mappedBy = "client_list")
+    private List<Sala> salaList;
 }

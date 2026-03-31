@@ -5,9 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ClientResponseDTO {
-    public Long id;
-    public String token;
+public class InviteResponseDTO {
+    public Long sala_id;
     public String name;
-    public String email;
 }

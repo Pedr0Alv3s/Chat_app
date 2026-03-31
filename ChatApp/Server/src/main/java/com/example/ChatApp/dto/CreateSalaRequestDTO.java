@@ -5,9 +5,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ClientResponseDTO {
-    public Long id;
-    public String token;
+public class CreateSalaRequestDTO {
     public String name;
-    public String email;
 }
