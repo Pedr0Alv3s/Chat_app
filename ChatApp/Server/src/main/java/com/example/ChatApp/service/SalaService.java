@@ -83,8 +83,8 @@ public class SalaService {
     //participantes e mensagens
     public AccessResponseDTO access(Long salaId, Long client_id) {
 
-        // voltar a lista de mensagens referente a cada sala individual;
-        // voltar a lista de pessoas conectadas ( implementar dps o esquema de
+        // retornar a lista de mensagens referente a cada sala individual;
+        // retornar a lista de pessoas conectadas ( implementar dps o esquema de
         // verificação por tempo);
 
         // Buscar sala;

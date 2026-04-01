@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 public class MensagemDTO {
     private Long id;
     private Long creator_Id;
+    private Long sala_Id;
     private String creator_name;
     private String content;
     private LocalDateTime data;

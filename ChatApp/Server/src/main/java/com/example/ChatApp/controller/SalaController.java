@@ -1,6 +1,5 @@
 package com.example.ChatApp.controller;
 
-
 import com.example.ChatApp.dto.roomOp.CreateSalaRequestDTO;
 import com.example.ChatApp.dto.invite.InviteRequestDTO;
 import com.example.ChatApp.dto.invite.InviteResponseDTO;
