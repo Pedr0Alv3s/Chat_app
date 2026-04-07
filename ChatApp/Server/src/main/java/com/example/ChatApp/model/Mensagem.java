@@ -20,11 +20,11 @@ public class Mensagem {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name="client_id",insertable = false, updatable = false)
+    @JoinColumn(name="client_id")
     private Client client;         //id do usuário que enviou a mensagem
 
     @ManyToOne
-    @JoinColumn(name="sala_id",insertable = false, updatable = false)
+    @JoinColumn(name="sala_id")
     private Sala sala;           //id da sala a qual pertence
 
     @Column(nullable = false,length = 200)

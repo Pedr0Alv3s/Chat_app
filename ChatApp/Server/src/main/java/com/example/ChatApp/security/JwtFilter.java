@@ -28,6 +28,11 @@ public class JwtFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
+        if (request.getRequestURI().startsWith("/ws")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         // 🔹 1. Pega o header
         String authHeader = request.getHeader("Authorization");
         System.out.println(">>> JwtFilter executado");

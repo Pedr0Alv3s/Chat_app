@@ -32,10 +32,10 @@ public class ChatService {
         this.jwtService = jwtService;
     }
 
-    public MensagemDTO enviar(MensagemRequestDTO dto,String token){
+    public MensagemDTO enviar(MensagemRequestDTO dto,Long client_id){
 
         //Pega objeto cliente
-        Long client_id = jwtService.extractUserId(token);
+        //Long client_id = jwtService.extractUserId(token);
         Optional<Client> optionalClient = clientRepository.findById(client_id);
         Client client = optionalClient.get();
 
@@ -50,6 +50,7 @@ public class ChatService {
         mensagem.setSala(sala);
         mensagem.setData(LocalDateTime.now());
 
+        System.out.println(mensagem);
         //Salva mensagem no banco de dados
         mensagemRepository.save(mensagem);
 

@@ -28,6 +28,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll() // libera login/register
+                                .requestMatchers("/ws/**").permitAll().requestMatchers("/ws").permitAll()
 //                        .anyRequest().permitAll() //permite acesso livre a todas as rotas
                         .anyRequest().authenticated()
                 )
