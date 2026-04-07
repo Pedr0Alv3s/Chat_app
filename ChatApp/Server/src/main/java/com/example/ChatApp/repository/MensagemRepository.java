@@ -11,5 +11,8 @@ import java.util.List;
 @Repository
 public interface MensagemRepository extends JpaRepository<Mensagem,Long> {
 
-    List<Mensagem> findByIdOrderByData(Long id);
+    // busca e carrega tudo de uma vez, pode melhorar depois
+    @Query("SELECT m FROM Mensagem m WHERE m.sala.id = :salaId ORDER BY m.data DESC")
+    List<Mensagem> findBySalaIdOrderByDataDesc(Long id);
+
 }

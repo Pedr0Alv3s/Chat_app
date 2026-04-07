@@ -115,7 +115,7 @@ public class SalaService {
 
             //Busca mensagem -> filtra por salaId -> usa .map para montar a lista->
             // -> lista incorpora a response
-        List<Mensagem> mensagem_list = mensagemRepository.findByIdOrderByData(salaId);
+        List<Mensagem> mensagem_list = mensagemRepository.findBySalaIdOrderByDataDesc(salaId);
 
         List<MensagemDTO> mensagemDTOList = mensagem_list.stream()
                 .map(m->{
