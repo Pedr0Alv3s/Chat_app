@@ -7,6 +7,7 @@ function Login() {
   const [cadUsername, setCadUsername] = React.useState("");
   const [cadPassword, setCadPassword] = React.useState("");
   const [confPassword, setConfPassword] = React.useState("");
+  const [temConta, setTemConta] = React.useState(true);
   const navigate = useNavigate();
 
   const handleLogin = () => {
@@ -38,49 +39,54 @@ function Login() {
 
   return (
     <>
-      <div className={styles.container}>
-        <h1>Login</h1>
-        <div className={styles.loginInputs}>
-          <input
-            placeholder="Usuário"
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-          <input
-            placeholder="Senha"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <button onClick={() => handleLogin()}>Login</button>
+      {temConta ?
+        <div className={styles.container}>
+          <h1>Login</h1>
+          <div className={styles.loginInputs}>
+            <input
+              placeholder="Usuário"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+            <input
+              placeholder="Senha"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <button onClick={() => handleLogin()}>Login</button>
+            <span>não possui conta? <button onClick={() => setTemConta(false)}>Cadastre-se</button></span>
+          </div>
         </div>
-      </div>
+        : null}
+      {temConta ? null :
+        <div className={styles.container}>
+          <h1>Cadastro de Usuário</h1>
+          <div className={styles.loginInputs}>
+            <input
+              placeholder="Usuário"
+              type="text"
+              value={cadUsername}
+              onChange={(e) => setCadUsername(e.target.value)}
+            />
+            <input
+              placeholder="Senha"
+              type="password"
+              value={cadPassword}
+              onChange={(e) => setCadPassword(e.target.value)}
+            />
+            <input
+              placeholder="Confirmar Senha"
+              type="password"
+              value={confPassword}
+              onChange={(e) => setConfPassword(e.target.value)}
+            />
+            <button onClick={() => handleCadastro()}>Cadastrar</button>
+          </div>
+        </div>
+      }
 
-      <div className={styles.container}>
-        <h1>Cadastro de Usuário</h1>
-        <div className={styles.loginInputs}>
-          <input
-            placeholder="Usuário"
-            type="text"
-            value={cadUsername}
-            onChange={(e) => setCadUsername(e.target.value)}
-          />
-          <input
-            placeholder="Senha"
-            type="password"
-            value={cadPassword}
-            onChange={(e) => setCadPassword(e.target.value)}
-          />
-          <input
-            placeholder="Confirmar Senha"
-            type="password"
-            value={confPassword}
-            onChange={(e) => setConfPassword(e.target.value)}
-          />
-          <button onClick={() => handleCadastro()}>Cadastrar</button>
-        </div>
-      </div>
     </>
   );
 }
