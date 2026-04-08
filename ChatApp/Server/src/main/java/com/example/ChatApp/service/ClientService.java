@@ -1,8 +1,8 @@
 package com.example.ChatApp.service;
 
-import com.example.ChatApp.dto.LoginRequestDTO;
-import com.example.ChatApp.dto.ClientResponseDTO;
-import com.example.ChatApp.dto.RegisterRequestDTO;
+import com.example.ChatApp.dto.auth.LoginRequestDTO;
+import com.example.ChatApp.dto.auth.ClientResponseDTO;
+import com.example.ChatApp.dto.auth.RegisterRequestDTO;
 import com.example.ChatApp.model.Client;
 import com.example.ChatApp.repository.ClientRepository;
 import com.example.ChatApp.security.JwtService;

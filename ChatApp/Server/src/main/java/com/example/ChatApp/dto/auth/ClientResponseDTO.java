@@ -1,4 +1,4 @@
-package com.example.ChatApp.dto;
+package com.example.ChatApp.dto.auth;
 
 import lombok.Getter;
 import lombok.Setter;

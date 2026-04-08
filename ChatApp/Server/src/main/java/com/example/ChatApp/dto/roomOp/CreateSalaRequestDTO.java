@@ -1,10 +1,10 @@
-package com.example.ChatApp.dto;
+package com.example.ChatApp.dto.roomOp;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class InviteRequestDTO {
+public class CreateSalaRequestDTO {
     public String name;
 }

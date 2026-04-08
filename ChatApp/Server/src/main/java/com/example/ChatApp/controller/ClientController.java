@@ -1,8 +1,8 @@
 package com.example.ChatApp.controller;
 
-import com.example.ChatApp.dto.ClientResponseDTO;
-import com.example.ChatApp.dto.LoginRequestDTO;
-import com.example.ChatApp.dto.RegisterRequestDTO;
+import com.example.ChatApp.dto.auth.ClientResponseDTO;
+import com.example.ChatApp.dto.auth.LoginRequestDTO;
+import com.example.ChatApp.dto.auth.RegisterRequestDTO;
 import com.example.ChatApp.service.ClientService;
 import org.springframework.web.bind.annotation.*;
 
