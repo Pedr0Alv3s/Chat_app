@@ -35,7 +35,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         // 🔹 1. Pega o header
         String authHeader = request.getHeader("Authorization");
-        System.out.println(">>> JwtFilter executado");
+
         // 🔹 2. Verifica se existe token
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
 

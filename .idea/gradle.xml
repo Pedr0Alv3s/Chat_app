@@ -6,6 +6,14 @@
       <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="gradleJvm" value="#JAVA_HOME" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/ChatApp" />
+            <option value="$PROJECT_DIR$/ChatApp/Client" />
+            <option value="$PROJECT_DIR$/ChatApp/Server" />
+          </set>
+        </option>
       </GradleProjectSettings>
     </option>
   </component>

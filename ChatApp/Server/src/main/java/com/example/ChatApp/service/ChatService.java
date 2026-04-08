@@ -50,10 +50,10 @@ public class ChatService {
         mensagem.setSala(sala);
         mensagem.setData(LocalDateTime.now());
 
-        System.out.println(mensagem);
         //Salva mensagem no banco de dados
         mensagemRepository.save(mensagem);
 
+        //Monta a resposta
         MensagemDTO response = new MensagemDTO();
         response.setId(mensagem.getId());
         response.setCreator_name(mensagem.getClient().getName());
