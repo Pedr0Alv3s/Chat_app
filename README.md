@@ -25,3 +25,13 @@ O projeto contém duas aplicações centrais, a aplicação Servidor, que será 
   **Banco de dados**     -> Responsável pelo armazenamento persistente das informações da aplicação.
 
 ## Tabela de requisitos
+
+|Nº|Requisito|Descrição|
+|---|---|---|
+|RF1| Registro de usuário| O usuário deve conseguir criar um registro com email e senha|
+|RF2| Login de usuário| O usuário deve conseguir realizaro login com os dados usados no registro|
+|RF3| Criação de salas| O usuário deve conseguir criar salas de chat|
+|RF4| Convite para sala| O usuário deve conseguir convidar outros usuários para sua sala|
+|RF5| Aceitar/Recusar convite| O usuário deve conseguir aceitar ou recusar convites de outros usuários|
+|RF6| Envio de mensagens| O usuário deve conseguir enviar mensagens de texto nas salas da qual participa|
+|RF7| Persistência de mensagens| As mensagens enviadas tem de ser salvas para visualização após o periodo de conexão|
