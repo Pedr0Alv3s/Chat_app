@@ -1,6 +1,8 @@
 # Chat_app
 Este repositório apresenta a implementação de um sistema de chat em tempo real, desenvolvido como parte da disciplina de Sistemas Distribuídos.
 
+Alunos: Pedro Alves de Moraes Medeiros, Gabriel Moraes e Angelo Salvatti
+
 ## Descrição
 O objetivo do projeto é construir uma aplicação distribuída baseada no modelo cliente-servidor, na qual os clientes enviam requisições que são processadas centralmente pelo servidor. Nesse modelo, o servidor é responsável por receber, tratar e encaminhar as solicitações dos usuários.
 
@@ -26,6 +28,7 @@ O projeto contém duas aplicações centrais, a aplicação Servidor, que será 
 
 ## Tabela de requisitos
 
+### Requisitos funcionais
 |Nº|Requisito|Descrição|
 |---|---|---|
 |RF1| Registro de usuário| O usuário deve conseguir criar um registro com email e senha|
@@ -34,4 +37,37 @@ O projeto contém duas aplicações centrais, a aplicação Servidor, que será 
 |RF4| Convite para sala| O usuário deve conseguir convidar outros usuários para sua sala|
 |RF5| Aceitar/Recusar convite| O usuário deve conseguir aceitar ou recusar convites de outros usuários|
 |RF6| Envio de mensagens| O usuário deve conseguir enviar mensagens de texto nas salas da qual participa|
-|RF7| Persistência de mensagens| As mensagens enviadas tem de ser salvas para visualização após o periodo de conexão|
+|RF7| Persistência de mensagens| As mensagens enviadas tem de ser salvas para visualização em futuros acessos dos usuários participantes da conversa|
+
+### Requisitos não-funcionais
+|Nº|Requisito|Descrição|
+|---|---|---|
+|RNF1|	Desempenho em tempo real|	O sistema deve garantir baixa latência no envio e recebimento de mensagens|
+|RNF2|	Escalabilidade|	A aplicação deve ser capaz de suportar o aumento no número de usuários simultâneos, permitindo a adição de novos nós (ex: Workers) sem impacto significativo no desempenho.|
+|RNF3|	Disponibilidade|	O sistema deve permanecer disponível na maior parte do tempo, com tolerância a falhas em componentes como Broker ou Workers.|
+|RNF4|	Consistência de dados|	As mensagens enviadas devem ser corretamente persistidas no banco de dados, evitando perda ou duplicação de dados.|
+|RNF5|	Segurança de autenticação|	O sistema deve garantir autenticação segura, protegendo credenciais de usuários com uso de criptografia de senha e tokens de acesso.|
+|RNF6|	Integridade de mensagens|	As mensagens não devem ser alteradas durante o tráfego entre cliente, servidor e demais componentes do sistema.|
+|RNF7|	Manutenibilidade|	O sistema deve possuir uma arquitetura modular (ex: separação entre API, WebSocket, Broker e Workers), facilitando manutenção e evolução.|
+|RNF8|	Observabilidade|	A aplicação deve possuir mecanismos de logging e monitoramento para rastrear erros, eventos e fluxo de mensagens.|
+|RNF9|	Usabilidade|	A interface do cliente deve permitir interação simples e intuitiva para envio de mensagens, gerenciamento de salas e convites.|
+|RNF10|	Tempo de recuperação|	Em caso de falha, o sistema deve ser capaz de se recuperar rapidamente, retomando o processamento de mensagens sem perda significativa.|
+
+## Guia de Endpoints
+Esta seção tem o objetivo de apresentar e descrever as principais rotas disponíveis para interação com o sistema.
+
+### Endpoints de usuário:
+ Os Endpoints relacionados a usuário, como registro e login estão sobre a rota /auth/. 
+ portanto temos suas rotas completas como: [endereço do servidor]:8080/auth/register e [endereço do servidor]:8080/auth/login, respectivamente.
+ Suas funções são de criação e autenticação de usuário. Sendo somente possível realizar outras interações com a aplicação com um login existente e o token de segurança gerado nesse processo.
+
+### Endpoints referentes a interações com Salas:
+Salas são os espaços de conversas entre usuários, seus endpoints estão sobre a rota /rooms/
+ -> /create         -> Rota para a criação de salas;
+ -> {salaId}/invite -> Rota para envio de convite para a sala especificada pelo id;
+ -> {salaId}/access -> Rota de acesso de uma sala;
+
+### Endpoints referentes a chats:
+
+
+
