@@ -1,0 +1,335 @@
+/* ─── Layout ─── */
+.container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    background-color: var(--corp-bg);
+    overflow: hidden;
+}
+
+.mainContent {
+    flex: 1;
+    overflow-y: auto;
+    padding: 28px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* ─── Hero ─── */
+.hero {
+    background-color: var(--corp-surface);
+    border: 1px solid var(--corp-border);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: var(--corp-shadow-sm);
+    position: relative;
+}
+
+.heroBanner {
+    height: 80px;
+    background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 50%, #1e40af 100%);
+    opacity: 0.85;
+}
+
+.heroBody {
+    display: flex;
+    align-items: flex-end;
+    gap: 24px;
+    padding: 0 32px 28px;
+    flex-wrap: wrap;
+}
+
+.avatarLarge {
+    width: 90px;
+    height: 90px;
+    border-radius: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 34px;
+    font-weight: 800;
+    color: white;
+    margin-top: -45px;
+    flex-shrink: 0;
+    border: 4px solid var(--corp-surface);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.14);
+    letter-spacing: -1px;
+}
+
+.heroInfo {
+    flex: 1;
+    min-width: 0;
+    padding-bottom: 4px;
+}
+
+.userName {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--corp-text-primary);
+    margin: 0 0 2px;
+    letter-spacing: -0.5px;
+}
+
+.userRole {
+    font-size: 14px;
+    color: var(--corp-text-muted);
+    font-weight: 500;
+    margin: 0 0 10px;
+}
+
+.heroMeta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.onlineDot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--corp-status-online);
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+.onlineLabel {
+    font-size: 12px;
+    color: var(--corp-status-online);
+    font-weight: 600;
+}
+
+.heroDivider {
+    color: var(--corp-text-muted);
+    font-size: 14px;
+}
+
+.userEmail {
+    font-size: 12px;
+    color: var(--corp-text-muted);
+}
+
+/* ─── Stats ─── */
+.heroStats {
+    display: flex;
+    gap: 8px;
+    padding-bottom: 4px;
+    flex-shrink: 0;
+}
+
+.statBadge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: var(--corp-bg);
+    border: 1px solid var(--corp-border);
+    border-radius: 12px;
+    padding: 12px 20px;
+    min-width: 72px;
+}
+
+.statBadgeValue {
+    font-size: 20px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.5px;
+}
+
+.statBadgeLabel {
+    font-size: 11px;
+    color: var(--corp-text-muted);
+    margin-top: 4px;
+    font-weight: 500;
+}
+
+/* ─── Cards Grid ─── */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background-color: var(--corp-surface);
+    border: 1px solid var(--corp-border);
+    border-radius: 16px;
+    padding: 22px 24px;
+    box-shadow: var(--corp-shadow-sm);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.cardHeader {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--corp-border);
+}
+
+.cardIcon {
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--corp-accent);
+    flex-shrink: 0;
+}
+
+.cardTitle {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--corp-text-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 0;
+}
+
+/* ─── Info Items ─── */
+.infoList {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.infoRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    background-color: var(--corp-bg);
+    border-radius: 10px;
+    gap: 10px;
+}
+
+.infoLabel {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--corp-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: block;
+    margin-bottom: 3px;
+}
+
+.infoValue {
+    font-size: 14px;
+    color: var(--corp-text-primary);
+    font-weight: 500;
+}
+
+.editLink {
+    font-size: 12px;
+    color: var(--corp-accent);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    white-space: nowrap;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: background 0.15s;
+}
+
+.editLink:hover {
+    background-color: var(--corp-accent-light);
+}
+
+/* ─── Status Pill ─── */
+.statusPill {
+    background-color: #dcfce7;
+    color: #166534;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+/* ─── Toggle ─── */
+.toggleRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    background-color: var(--corp-bg);
+    border-radius: 10px;
+}
+
+.toggle {
+    width: 40px;
+    height: 22px;
+    border-radius: 999px;
+    background-color: var(--corp-border-dark);
+    border: none;
+    cursor: pointer;
+    position: relative;
+    transition: background 0.2s;
+    flex-shrink: 0;
+}
+
+.toggleOn {
+    background-color: var(--corp-accent);
+}
+
+.toggleKnob {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 16px;
+    height: 16px;
+    background: white;
+    border-radius: 50%;
+    transition: transform 0.2s;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggleOn .toggleKnob {
+    transform: translateX(18px);
+}
+
+/* ─── Footer ─── */
+.footerActions {
+    padding-top: 4px;
+    border-top: 1px solid var(--corp-border);
+    display: flex;
+    align-items: center;
+}
+
+.logoutBtn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #ff1f1f;
+    color: #ffffff;
+    border: 1px solid #fecaca;
+    padding: 9px 18px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    outline: none;
+}
+
+.logoutBtn:hover {
+    background-color: #831219;
+}
+
+/* ─── Scrollbar ─── */
+.mainContent::-webkit-scrollbar {
+    width: 5px;
+}
+
+.mainContent::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.mainContent::-webkit-scrollbar-thumb {
+    background: var(--corp-border-dark);
+    border-radius: 4px;
+}
