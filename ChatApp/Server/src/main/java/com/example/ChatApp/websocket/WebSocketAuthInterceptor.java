@@ -25,19 +25,7 @@ public class WebSocketAuthInterceptor implements HandshakeInterceptor {
                                    WebSocketHandler wsHandler,
                                    Map<String, Object> attributes) {
 
-        System.out.println(">>> Handshake chegou no interceptor (MOCK MODE)");
-
         try {
-            /* 
-             * Mock: Simula o usuário logado com id 1L
-             * (Para testar o chat real-time sem token válido)
-             */
-            Long mockUserId = 1L;
-            attributes.put("userId", mockUserId);
-            System.out.println("WebSocket MOCK autenticado: userId=" + mockUserId);
-            return true;
-
-            /* LOGICA ORIGINAL COMENTADA
             String query = request.getURI().getQuery();
             if (query == null) {
                 System.out.println("❌ Sem query");
@@ -51,20 +39,19 @@ public class WebSocketAuthInterceptor implements HandshakeInterceptor {
 
             String token = params.get("token");
             if (token == null || token.isBlank()) {
-                System.out.println("Token ausente");
+                System.out.println("Token ausente no handshake do STOMP");
                 return false;
             }
 
             if (!jwtService.isValid(token)) {
-                System.out.println("Token inválido");
+                System.out.println("Token JWT inválido no handshake");
                 return false;
             }
 
             Long userId = jwtService.extractUserId(token);
             attributes.put("userId", userId);
-            System.out.println("WebSocket autenticado: userId=" + userId);
+            System.out.println("WebSocket autorizado (Oficial): userId=" + userId);
             return true;
-            */
         } catch (Exception e) {
             e.printStackTrace();
             return false;
