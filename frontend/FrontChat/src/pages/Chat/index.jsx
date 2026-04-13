@@ -12,7 +12,8 @@ import {
     IconAttach,
     IconEmoji,
     IconUsers,
-    IconBell
+    IconBell,
+    IconUserPlus
 } from "../../components/Icons";
 
 function Chat() {
@@ -21,6 +22,8 @@ function Chat() {
     const [roomName, setRoomName] = useState("geral");
     const [inputText, setInputText] = useState("");
     const [loading, setLoading] = useState(true);
+    const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+    const [inviteeName, setInviteeName] = useState("");
     const messageEndRef = useRef(null);
 
     const { salaId } = useParams();
@@ -114,6 +117,32 @@ function Chat() {
         setInputText("");
     };
 
+    const handleInvite = async (e) => {
+        e.preventDefault();
+        if (!inviteeName.trim()) return;
+
+        try {
+            await chatService.inviteUser(currentSalaId, inviteeName);
+            alert(`Usuário ${inviteeName} convidado com sucesso!`);
+            setInviteeName("");
+            setIsInviteModalOpen(false);
+            
+            // Recarregar lista de membros
+            const data = await chatService.accessRoom(currentSalaId);
+            const participants = data.participantes.map(p => ({
+                id: p.client_id,
+                name: p.name,
+                role: "Membro",
+                status: "online"
+            }));
+            setMembers(participants);
+
+        } catch (error) {
+            console.error("Erro ao convidar:", error);
+            alert("Erro ao convidar usuário. Verifique se o nome está correto.");
+        }
+    };
+
     const statusLabel = { online: "Online", away: "Ausente", busy: "Ocupado" };
 
     if (loading) {
@@ -140,6 +169,13 @@ function Chat() {
                             <span className={styles.chatHeaderSub}>· Canal de comunicação em tempo real</span>
                         </div>
                         <div className={styles.chatHeaderActions}>
+                            <button 
+                                className={styles.headerActionBtn} 
+                                title="Convidar Membro"
+                                onClick={() => setIsInviteModalOpen(true)}
+                            >
+                                <IconUserPlus />
+                            </button>
                             <button className={styles.headerActionBtn} title="Membros"><IconUsers /></button>
                             <button className={styles.headerActionBtn} title="Buscar"><IconSearch /></button>
                             <button className={styles.headerActionBtn} title="Notificações"><IconBell /></button>
@@ -219,6 +255,38 @@ function Chat() {
                     ))}
                 </aside>
             </div>
+
+            {/* Modal de Convite */}
+            {isInviteModalOpen && (
+                <div className={styles.modalOverlay}>
+                    <div className={styles.modalContent}>
+                        <h2 className={styles.modalTitle}>Convidar Membro</h2>
+                        <p className={styles.modalDesc}>Digite o nome de usuário exato da pessoa que deseja convidar.</p>
+                        <form onSubmit={handleInvite}>
+                            <input
+                                className={styles.modalInput}
+                                type="text"
+                                placeholder="Nome do usuário..."
+                                value={inviteeName}
+                                onChange={(e) => setInviteeName(e.target.value)}
+                                autoFocus
+                            />
+                            <div className={styles.modalActions}>
+                                <button
+                                    type="button"
+                                    className={styles.modalBtnCancel}
+                                    onClick={() => { setIsInviteModalOpen(false); setInviteeName(""); }}
+                                >
+                                    Cancelar
+                                </button>
+                                <button type="submit" className={styles.modalBtnPrimary}>
+                                    Convidar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

@@ -401,3 +401,111 @@
 .memberList::-webkit-scrollbar-thumb:hover {
   background: var(--corp-text-muted);
 }
+
+/* =====================================================
+   Modals (Invite/Search)
+   ===================================================== */
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modalContent {
+  background: var(--corp-header);
+  border: 1px solid var(--corp-border-dark);
+  border-radius: 12px;
+  width: 100%;
+  max-width: 400px;
+  padding: 24px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modalTitle {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--corp-text-primary);
+}
+
+.modalDesc {
+  font-size: 13px;
+  color: var(--corp-text-muted);
+  margin-bottom: 20px;
+}
+
+.modalInput {
+  width: 100%;
+  background: var(--corp-input-bg);
+  border: 1px solid var(--corp-border-dark);
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: var(--corp-text-primary);
+  font-size: 14px;
+  margin-bottom: 24px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.modalInput:focus {
+  border-color: var(--corp-accent);
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.modalBtnCancel {
+  background: transparent;
+  border: none;
+  color: var(--corp-text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 6px;
+}
+
+.modalBtnCancel:hover {
+  color: var(--corp-text-primary);
+  background: var(--corp-border);
+}
+
+.modalBtnPrimary {
+  background: var(--corp-accent);
+  border: none;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px 20px;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.modalBtnPrimary:hover {
+  background: var(--corp-accent-hover);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
