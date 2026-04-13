@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import styles from "./styles.module.css";
 import Header from "../../components/Header";
 import { getInitials, getAvatarColor } from "../../utils/avatarUtils";
+import { authService } from "../../services/api";
 import {
     IconUsers,
     IconBell,
@@ -9,12 +10,6 @@ import {
     IconProfile,
     IconMessage
 } from "../../components/Icons";
-
-const userName = "Usuario";
-const userRole = "Gerente de Projetos Sênior";
-const userEmail = "[EMAIL_ADDRESS]";
-const userDept = "Operações & Estratégia";
-const userPhone = "+55 (11) 98765-4321";
 
 function StatBadge({ label, value, color }) {
     return (
@@ -54,13 +49,19 @@ function Toggle({ label, checked }) {
 }
 
 export default function Perfil() {
+    // Recuperar usuário do localStorage
+    const savedUser = JSON.parse(localStorage.getItem('user') || '{}');
+    const userName = savedUser.name || "Usuário";
+    const userEmail = savedUser.email || "email@empresa.com.br";
+    const userRole = "Gerente de Projetos Sênior";
+    const userDept = "Operações & Estratégia";
+    const userPhone = "+55 (11) 98765-4321";
+
     return (
         <div className={styles.container}>
             <Header />
 
             <main className={styles.mainContent}>
-
-                {/* ── Hero ── */}
                 <section className={styles.hero}>
                     <div className={styles.heroBanner} />
                     <div className={styles.heroBody}>
@@ -88,10 +89,7 @@ export default function Perfil() {
                     </div>
                 </section>
 
-                {/* ── Cards ── */}
                 <div className={styles.grid}>
-
-                    {/* Dados Pessoais */}
                     <div className={styles.card}>
                         <div className={styles.cardHeader}>
                             <div className={styles.cardIcon} style={{ background: "#eff6ff" }}>
@@ -105,8 +103,6 @@ export default function Perfil() {
                             <InfoRow label="Departamento" value={userDept} />
                         </div>
                     </div>
-
-                    {/* Segurança */}
                     <div className={styles.card}>
                         <div className={styles.cardHeader}>
                             <div className={styles.cardIcon} style={{ background: "#f0fdf4" }}>
@@ -127,7 +123,6 @@ export default function Perfil() {
                         </div>
                     </div>
 
-                    {/* Preferências */}
                     <div className={styles.card}>
                         <div className={styles.cardHeader}>
                             <div className={styles.cardIcon} style={{ background: "#fff7ed" }}>
@@ -145,11 +140,10 @@ export default function Perfil() {
 
                 </div>
 
-                {/* ── Footer Actions ── */}
                 <div className={styles.footerActions}>
                     <button
                         className={styles.logoutBtn}
-                        onClick={() => window.location.href = "/login"}
+                        onClick={() => authService.logout()}
                     >
                         <IconLogOut size={15} />
                         Encerrar Sessão

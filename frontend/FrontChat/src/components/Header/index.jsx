@@ -13,8 +13,8 @@ function Header() {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [dropdownTop, setDropdownTop] = useState(0);
 
-    const isChat = location.pathname === "/chat";
-    const isHome = location.pathname === "/";
+    const isChat = location.pathname.startsWith("/chat");
+    const isHome = location.pathname === "/home";
 
     const recents = [
         { id: 1, name: "Equipe de Design", last: "As mudanças no layout..." },
@@ -52,14 +52,14 @@ function Header() {
 
     return (
         <header className={styles.header}>
-            <div className={styles.logoArea} onClick={() => navigate("/")} title="Início">
+            <div className={styles.logoArea} onClick={() => navigate("/home")} title="Início">
                 <div className={styles.logo}>P</div>
             </div>
 
             <nav className={styles.nav}>
                 <button
                     className={`${styles.navItem} ${isHome ? styles.active : ""}`}
-                    onClick={() => { navigate("/"); setIsDropdownOpen(false); }}
+                    onClick={() => { navigate("/home"); setIsDropdownOpen(false); }}
                     title="Início"
                 >
                     <IconHome />

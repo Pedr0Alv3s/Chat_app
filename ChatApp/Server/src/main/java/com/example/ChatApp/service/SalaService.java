@@ -41,10 +41,11 @@ public class SalaService {
         sala.setCreator_id(creator_id);
         List<Client> clients = new ArrayList<>();
         clients.add(client);
-        sala.setClient_list(clients);
+        sala.setClientList(clients);
         salaRepository.save(sala);
 
         SalaResponseDTO response = new SalaResponseDTO();
+        response.id = sala.getId();
         response.name = sala.getName();
         response.creator_id = sala.getCreator_id();
         return response;
@@ -63,12 +64,12 @@ public class SalaService {
         Client invitedClient = optionalClient.get();
 
         // evitar duplicação
-        if (sala.getClient_list().contains(invitedClient)) {
+        if (sala.getClientList().contains(invitedClient)) {
             throw new RuntimeException("Usuário já está na sala");
         }
 
         // adicionar usuário na sala
-        sala.getClient_list().add(invitedClient);
+        sala.getClientList().add(invitedClient);
 
         // Construção da resposta e salvamento no BD;
         salaRepository.save(sala);
@@ -92,7 +93,7 @@ public class SalaService {
                 .orElseThrow(() -> new RuntimeException("Sala não encontrada"));
 
         //Valicação de pertencimento na lista da sala;
-        boolean pertence = sala.getClient_list()
+        boolean pertence = sala.getClientList()
                 .stream()
                 .anyMatch(u -> u.getId().equals(client_id));
 
@@ -101,7 +102,7 @@ public class SalaService {
         }
 
         //Mapear participantes -> monta lista com resposta de só alguns campos selecionados no DTO
-        List<ParticipanteDTO> client_list= sala.getClient_list()
+        List<ParticipanteDTO> client_list= sala.getClientList()
                 .stream()
                 .map(u -> {
                     ParticipanteDTO dto = new ParticipanteDTO();
@@ -136,5 +137,19 @@ public class SalaService {
         response.setParticipantes(client_list);
 
         return response;
+    }
+
+    // Listar todas as salas que o usuário participa
+    public List<SalaResponseDTO> listMyRooms(Long clientId) {
+        return salaRepository.findByClientList_Id(clientId)
+                .stream()
+                .map(sala -> {
+                    SalaResponseDTO dto = new SalaResponseDTO();
+                    dto.setId(sala.getId());
+                    dto.setName(sala.getName());
+                    dto.setCreator_id(sala.getCreator_id());
+                    return dto;
+                })
+                .toList();
     }
 }

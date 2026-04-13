@@ -6,6 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SalaResponseDTO {
+    public Long id;
     public String name;
     public Long creator_id;
 }

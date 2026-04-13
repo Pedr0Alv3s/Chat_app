@@ -23,11 +23,15 @@ public class ChatController {
     @MessageMapping("/chat.send")
     public void enviar(MensagemRequestDTO dto,
                        SimpMessageHeaderAccessor accessor) {
-        System.out.println(">>> ENTROU NO CONTROLLER");
+        System.out.println(">>> WebSocket: Mensagem recebida para sala " + dto.getSala_id());
+        
         Long userId = (Long) accessor.getSessionAttributes().get("userId");
+        if (userId == null) {
+            System.err.println("❌ Erro: Usuario nao autenticado na sessao WS");
+            return;
+        }
 
-        System.out.println(">>> Controller recebeu mensagem: " + dto.getContent()+ " na sala: " + dto.getSala_id());
-
+        System.out.println(">>> Processando mensagem do usuario: " + userId + " - Conteúdo: " + dto.getContent());
         MensagemDTO mensagem = chatService.enviar(dto, userId);
 
         messagingTemplate.convertAndSend(

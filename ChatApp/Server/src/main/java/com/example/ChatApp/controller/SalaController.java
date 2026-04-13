@@ -9,6 +9,8 @@ import com.example.ChatApp.service.SalaService;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/rooms")
 public class SalaController {
@@ -47,5 +49,16 @@ public class SalaController {
                 .getPrincipal();
 
         return salaService.access(salaId,client_id);
+    }
+
+    // Listar minhas salas
+    @GetMapping("/my")
+    public List<SalaResponseDTO> listMy(@RequestHeader("Authorization") String token) {
+        Long client_id = (Long) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        return salaService.listMyRooms(client_id);
     }
 }

@@ -28,6 +28,6 @@ public class Client {
     @Column(name = "name", nullable = false, length = 20)
     private String name;
 
-    @ManyToMany(mappedBy = "client_list")
+    @ManyToMany(mappedBy = "clientList")
     private List<Sala> salaList;            //Lista de salas da qual o usuário tem acesso;
 }

@@ -13,6 +13,6 @@ public interface MensagemRepository extends JpaRepository<Mensagem,Long> {
 
     // busca e carrega tudo de uma vez, pode melhorar depois
     @Query("SELECT m FROM Mensagem m WHERE m.sala.id = :salaId ORDER BY m.data DESC")
-    List<Mensagem> findBySalaIdOrderByDataDesc(Long id);
+    List<Mensagem> findBySalaIdOrderByDataDesc(Long salaId);
 
 }

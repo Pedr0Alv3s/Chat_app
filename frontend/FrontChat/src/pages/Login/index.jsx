@@ -1,39 +1,46 @@
 import React from "react";
 import styles from "../Login/styles.module.css";
 import { useNavigate } from "react-router-dom";
+import { authService } from "../../services/api";
+
 function Login() {
-  const [username, setUsername] = React.useState("");
+  const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
-  const [cadUsername, setCadUsername] = React.useState("");
+  const [name, setName] = React.useState("");
+  const [cadEmail, setCadEmail] = React.useState("");
   const [cadPassword, setCadPassword] = React.useState("");
   const [confPassword, setConfPassword] = React.useState("");
   const [temConta, setTemConta] = React.useState(true);
   const navigate = useNavigate();
 
-  const handleLogin = () => {
-    // console.log("Username:", username);
-    // console.log("Password:", password);
-    if (username && password) {
-      console.log("redirecionando para home");
-      navigate("/");
+  const handleLogin = async () => {
+    if (email && password) {
+      try {
+        await authService.login(email, password);
+        navigate("/home");
+      } catch (error) {
+        alert(error.response?.data?.message || "Erro ao realizar login. Verifique suas credenciais.");
+      }
     } else {
-      console.log("preencha todos os campos corretamente");
+      alert("Preencha todos os campos corretamente");
     }
   };
 
-  const handleCadastro = () => {
-    // console.log("Username:", cadUsername);
-    // console.log("Password:", cadPassword);
-    // console.log("Confirm Password:", confPassword);
-    if (cadUsername && cadPassword && confPassword) {
+  const handleCadastro = async () => {
+    if (name && cadEmail && cadPassword && confPassword) {
       if (cadPassword !== confPassword) {
-        console.log("senhas não coinsidem");
+        alert("As senhas não coincidem");
       } else {
-        console.log("redirecionando para home");
-        navigate("/");
+        try {
+          await authService.register(name, cadEmail, cadPassword);
+          alert("Cadastro realizado com sucesso! Faça login para continuar.");
+          setTemConta(true);
+        } catch (error) {
+          alert(error.response?.data?.message || "Erro ao realizar cadastro.");
+        }
       }
     } else {
-      console.log("preencha todos os campos corretamente");
+      alert("Preencha todos os campos corretamente");
     }
   };
 
@@ -44,10 +51,10 @@ function Login() {
           <h1>Login</h1>
           <div className={styles.loginInputs}>
             <input
-              placeholder="Usuário"
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
             <input
               placeholder="Senha"
@@ -65,10 +72,16 @@ function Login() {
           <h1>Cadastro de Usuário</h1>
           <div className={styles.loginInputs}>
             <input
-              placeholder="Usuário"
+              placeholder="Nome Completo"
               type="text"
-              value={cadUsername}
-              onChange={(e) => setCadUsername(e.target.value)}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+            <input
+              placeholder="Email"
+              type="email"
+              value={cadEmail}
+              onChange={(e) => setCadEmail(e.target.value)}
             />
             <input
               placeholder="Senha"
@@ -83,6 +96,7 @@ function Login() {
               onChange={(e) => setConfPassword(e.target.value)}
             />
             <button onClick={() => handleCadastro()}>Cadastrar</button>
+            <span>já possui conta? <button onClick={() => setTemConta(true)}>Login</button></span>
           </div>
         </div>
       }

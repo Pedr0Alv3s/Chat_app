@@ -16,7 +16,6 @@
   overflow: hidden;
 }
 
-
 .leftCol {
   display: flex;
   flex-direction: column;
@@ -77,7 +76,7 @@
 
 .statsRow {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 14px;
 }
 
@@ -145,6 +144,12 @@
   color: var(--corp-text-muted);
 }
 
+.panelTitleGroup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .panelTitle {
   font-size: 13px;
   font-weight: 700;
@@ -163,6 +168,26 @@
   padding: 1px 8px;
 }
 
+.createRoomBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: var(--corp-accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.createRoomBtn:hover {
+  background: var(--corp-accent-hover);
+  transform: translateY(-1px);
+}
+
 .searchBar {
   display: flex;
   align-items: center;
@@ -179,11 +204,6 @@
   outline: none;
   font-size: 14px;
   color: var(--corp-text-primary);
-  font-family: var(--sans);
-}
-
-.searchInput::placeholder {
-  color: var(--corp-text-muted);
 }
 
 .chatList {
@@ -199,14 +219,6 @@
   cursor: pointer;
   transition: background 0.12s;
   border-bottom: 1px solid var(--corp-border);
-}
-
-.chatRow:last-child {
-  border-bottom: none;
-}
-
-.chatRow:hover {
-  background: var(--corp-bg);
 }
 
 .chatRowAvatar {
@@ -225,15 +237,12 @@
 .chatRowBody {
   flex: 1;
   min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
 }
 
 .chatRowTop {
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  margin-bottom: 2px;
 }
 
 .chatRowName {
@@ -245,44 +254,14 @@
 .chatRowTime {
   font-size: 11px;
   color: var(--corp-text-muted);
-  flex-shrink: 0;
-}
-
-.chatRowBottom {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
 }
 
 .chatRowMsg {
   font-size: 13px;
   color: var(--corp-text-secondary);
-  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.badge {
-  background: var(--corp-accent);
-  color: white;
-  font-size: 10px;
-  font-weight: 700;
-  min-width: 18px;
-  height: 18px;
-  padding: 0 5px;
-  border-radius: 9px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.emptyMsg {
-  padding: 24px;
-  text-align: center;
-  color: var(--corp-text-muted);
-  font-size: 13px;
+  white-space: nowrap;
 }
 
 .rightCol {
@@ -290,173 +269,93 @@
   flex-direction: column;
   gap: 20px;
   padding: 28px 32px 28px 12px;
-  overflow-y: auto;
   border-left: 1px solid var(--corp-border);
 }
 
-.activityList {
-  display: flex;
-  flex-direction: column;
+.quickStartArea {
+  padding: 24px;
 }
 
-.activityItem {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 13px 20px;
-  border-bottom: 1px solid var(--corp-border);
-  transition: background 0.12s;
-}
-
-.activityItem:last-child {
-  border-bottom: none;
-}
-
-.activityItem:hover {
-  background: var(--corp-bg);
-}
-
-.activityAvatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
-  font-size: 11px;
+  z-index: 1000;
+}
+
+.modalContent {
+  background: var(--corp-surface);
+  width: 100%;
+  max-width: 440px;
+  padding: 32px;
+  border-radius: 20px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--corp-border);
+}
+
+.modalTitle {
+  font-size: 24px;
   font-weight: 700;
-  flex-shrink: 0;
-  margin-top: 1px;
+  color: var(--corp-text-primary);
+  margin-bottom: 8px;
 }
 
-.activityBody {
+.modalSub {
+  font-size: 14px;
+  color: var(--corp-text-muted);
+  margin-bottom: 24px;
+}
+
+.formGroup {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 8px;
+  margin-bottom: 24px;
 }
 
-.activityText {
+.formGroup label {
   font-size: 13px;
-  color: var(--corp-text-secondary);
-  line-height: 1.45;
-}
-
-.activityText strong {
-  color: var(--corp-text-primary);
   font-weight: 600;
 }
 
-.activityText em {
-  color: var(--corp-accent);
-  font-style: normal;
-  font-weight: 500;
-}
-
-.activityTime {
-  font-size: 11px;
-  color: var(--corp-text-muted);
-}
-
-.meetingList {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-}
-
-.meetingItem {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 14px 20px;
-  border-bottom: 1px solid var(--corp-border);
-  transition: background 0.12s;
-}
-
-.meetingItem:last-child {
-  border-bottom: none;
-}
-
-.meetingItem:hover {
+.formGroup input {
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--corp-border-dark);
   background: var(--corp-bg);
-}
-
-.meetingAccent {
-  width: 4px;
-  height: 36px;
-  border-radius: 4px;
-  background: var(--corp-accent);
-  flex-shrink: 0;
-}
-
-.meetingInfo {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
-.meetingTitle {
-  font-size: 13px;
-  font-weight: 600;
   color: var(--corp-text-primary);
+  outline: none;
 }
 
-.meetingMeta {
-  font-size: 12px;
-  color: var(--corp-text-muted);
-}
-
-.meetingJoin {
+.modalActions {
   display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 6px 12px;
-  border-radius: 8px;
-  background: var(--corp-accent);
-  color: white;
-  border: none;
-  font-size: 12px;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.cancelBtn, .submitBtn {
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  font-family: var(--sans);
-  transition: background 0.15s;
-  flex-shrink: 0;
 }
 
-.meetingJoin:hover {
-  background: var(--corp-accent-hover);
-}
-
-.leftCol::-webkit-scrollbar,
-.rightCol::-webkit-scrollbar,
-.chatList::-webkit-scrollbar {
-  width: 5px;
-}
-
-.leftCol::-webkit-scrollbar-track,
-.rightCol::-webkit-scrollbar-track,
-.chatList::-webkit-scrollbar-track {
+.cancelBtn {
   background: transparent;
+  border: 1px solid var(--corp-border-dark);
+  color: var(--corp-text-secondary);
 }
 
-.leftCol::-webkit-scrollbar-thumb,
-.rightCol::-webkit-scrollbar-thumb,
-.chatList::-webkit-scrollbar-thumb {
-  background: var(--corp-border-dark);
-  border-radius: 8px;
-}
-
-@media (max-width: 1000px) {
-  .mainContent {
-    grid-template-columns: 1fr;
-  }
-
-  .rightCol {
-    display: none;
-  }
-
-  .statsRow {
-    grid-template-columns: repeat(2, 1fr);
-  }
+.submitBtn {
+  background: var(--corp-accent);
+  border: none;
+  color: white;
 }
