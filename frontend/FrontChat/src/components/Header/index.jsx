@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import styles from "./styles.module.css";
 import { getInitials, getAvatarColor } from "../../utils/avatarUtils";
 import { IconHome, IconChat, IconProfile } from "../../components/Icons";
+import chatService from "../../services/chatService";
 
 function Header() {
     const navigate = useNavigate();
@@ -12,16 +13,32 @@ function Header() {
 
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [dropdownTop, setDropdownTop] = useState(0);
+    const [rooms, setRooms] = useState([]);
+
+    // Recuperar usuário real
+    const savedUser = JSON.parse(localStorage.getItem('user') || '{}');
+    const userInitial = savedUser.name ? getInitials(savedUser.name) : "U";
 
     const isChat = location.pathname.startsWith("/chat");
     const isHome = location.pathname === "/home";
 
-    const recents = [
-        { id: 1, name: "Equipe de Design", last: "As mudanças no layout..." },
-        { id: 2, name: "Marketing", last: "Carlos: Quando sai o novo..." },
-        { id: 3, name: "Desenvolvimento", last: "Refatoração concluída..." },
-        { id: 4, name: "RH / Avisos", last: "Lembrete: Reunião geral..." },
-    ];
+    useEffect(() => {
+        const fetchRooms = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                if (token) {
+                    const data = await chatService.getRooms();
+                    setRooms(data);
+                }
+            } catch (error) {
+                console.error("Erro ao carregar salas no Header:", error);
+            }
+        };
+
+        if (isDropdownOpen) {
+            fetchRooms();
+        }
+    }, [isDropdownOpen]);
 
     useEffect(() => {
         function handleClickOutside(event) {
@@ -47,7 +64,7 @@ function Header() {
 
     const handleSelectChat = (id) => {
         setIsDropdownOpen(false);
-        navigate("/chat");
+        navigate(`/chat/${id}`);
     };
 
     return (
@@ -81,17 +98,21 @@ function Header() {
                         <div className={styles.dropdownContainer} style={{ top: dropdownTop }}>
                             <div className={styles.dropdownHeader}>Conversas Recentes</div>
                             <div className={styles.dropdownContent}>
-                                {recents.map(chat => (
-                                    <button key={chat.id} className={styles.dropdownItem} onClick={() => handleSelectChat(chat.id)}>
-                                        <div className={styles.itemAvatar} style={{ background: getAvatarColor(chat.name) }}>
-                                            {getInitials(chat.name)}
-                                        </div>
-                                        <div className={styles.itemInfo}>
-                                            <span className={styles.itemName}>{chat.name}</span>
-                                            <span className={styles.itemMsg}>{chat.last}</span>
-                                        </div>
-                                    </button>
-                                ))}
+                                {rooms.length === 0 ? (
+                                    <div className={styles.emptyDropdown}>Nenhuma sala encontrada</div>
+                                ) : (
+                                    rooms.map(chat => (
+                                        <button key={chat.id} className={styles.dropdownItem} onClick={() => handleSelectChat(chat.id)}>
+                                            <div className={styles.itemAvatar} style={{ background: getAvatarColor(chat.name) }}>
+                                                {getInitials(chat.name)}
+                                            </div>
+                                            <div className={styles.itemInfo}>
+                                                <span className={styles.itemName}>{chat.name}</span>
+                                                <span className={styles.itemMsg}>Clique para abrir o chat</span>
+                                            </div>
+                                        </button>
+                                    ))
+                                )}
                             </div>
                         </div>
                     )}
@@ -110,10 +131,11 @@ function Header() {
             <div className={styles.userProfile}>
                 <div
                     className={styles.avatar}
-                    style={{ backgroundColor: "#2563eb" }}
-                    title="Seu perfil"
+                    style={{ backgroundColor: getAvatarColor(savedUser.name || "User") }}
+                    title={savedUser.name || "Seu perfil"}
+                    onClick={() => navigate("/perfil")}
                 >
-                    V
+                    {userInitial}
                 </div>
             </div>
         </header>

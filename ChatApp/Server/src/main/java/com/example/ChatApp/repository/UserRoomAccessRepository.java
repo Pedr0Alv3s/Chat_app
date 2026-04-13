@@ -8,5 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface UserRoomAccessRepository extends JpaRepository<UserRoomAccess, Long> {
-    Optional<UserRoomAccess> findByClientIdAndSalaId(Long clientId, Long salaId);
+    java.util.Optional<UserRoomAccess> findFirstByClientIdAndSalaIdOrderByIdDesc(Long clientId, Long salaId);
 }

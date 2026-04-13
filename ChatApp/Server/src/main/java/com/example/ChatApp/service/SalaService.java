@@ -1,16 +1,21 @@
 package com.example.ChatApp.service;
 
+import com.example.ChatApp.dto.DashboardStatsDTO;
 import com.example.ChatApp.dto.invite.InviteRequestDTO;
 import com.example.ChatApp.dto.invite.InviteResponseDTO;
 import com.example.ChatApp.dto.roomOp.*;
 import com.example.ChatApp.model.Client;
 import com.example.ChatApp.model.Mensagem;
 import com.example.ChatApp.model.Sala;
+import com.example.ChatApp.model.UserRoomAccess;
 import com.example.ChatApp.repository.ClientRepository;
 import com.example.ChatApp.repository.MensagemRepository;
 import com.example.ChatApp.repository.SalaRepository;
+import com.example.ChatApp.repository.UserRoomAccessRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -21,18 +26,32 @@ public class SalaService {
     SalaRepository salaRepository;
     ClientRepository clientRepository;
     MensagemRepository mensagemRepository;
+    UserRoomAccessRepository userRoomAccessRepository;
+
     //Seta objeto de Service referente a sala
     public SalaService(SalaRepository salaRepository,
                        ClientRepository clientRepository,
-                       MensagemRepository mensagemRepository){
+                       MensagemRepository mensagemRepository,
+                       UserRoomAccessRepository userRoomAccessRepository){
         this.salaRepository = salaRepository;
         this.clientRepository = clientRepository;
         this.mensagemRepository = mensagemRepository;
+        this.userRoomAccessRepository = userRoomAccessRepository;
+    }
+
+    public DashboardStatsDTO getDashboardStats(Long userId) {
+        LocalDateTime startOfDay = LocalDateTime.now().with(LocalTime.MIN);
+
+        long messagesToday = mensagemRepository.countByUserIdAndDataAfter(userId, startOfDay);
+        long unreadMessages = mensagemRepository.countUnreadMessages(userId);
+        int activeGroups = salaRepository.findByClientList_Id(userId).size();
+
+        return new DashboardStatsDTO(messagesToday, unreadMessages, activeGroups);
     }
 
     //Função create da sala
     public SalaResponseDTO create(CreateSalaRequestDTO dto, Long creator_id){
-
+        // ... (resto do método igual)
         Client client = clientRepository.findById(creator_id)
                 .orElseThrow();
 
@@ -84,10 +103,6 @@ public class SalaService {
     //participantes e mensagens
     public AccessResponseDTO access(Long salaId, Long client_id) {
 
-        // retornar a lista de mensagens referente a cada sala individual;
-        // retornar a lista de pessoas conectadas ( implementar dps o esquema de
-        // verificação por tempo);
-
         // Buscar sala;
         Sala sala = salaRepository.findById(salaId)
                 .orElseThrow(() -> new RuntimeException("Sala não encontrada"));
@@ -100,6 +115,24 @@ public class SalaService {
         if(!pertence){
             throw new RuntimeException("Acesso negado");
         }
+
+        // --- SISTEMA DE MARCAÇÃO DE LEITURA (PROTEGIDO) ---
+        try {
+            Optional<Client> optionalClient = clientRepository.findById(client_id);
+            if (optionalClient.isPresent()) {
+                Client client = optionalClient.get();
+                UserRoomAccess access = userRoomAccessRepository
+                        .findFirstByClientIdAndSalaIdOrderByIdDesc(client_id, salaId)
+                        .orElse(new UserRoomAccess(client, sala, LocalDateTime.now()));
+                
+                access.setLastViewedAt(LocalDateTime.now());
+                userRoomAccessRepository.save(access);
+                System.out.println(">>> Marcado como lido: User " + client_id + " na Sala " + salaId);
+            }
+        } catch (Exception e) {
+            System.err.println("⚠️ Alerta: Erro ao marcar como lido (nao bloqueante): " + e.getMessage());
+        }
+        // ---------------------------------------------------
 
         //Mapear participantes -> monta lista com resposta de só alguns campos selecionados no DTO
         List<ParticipanteDTO> client_list = new java.util.ArrayList<>();
@@ -116,9 +149,6 @@ public class SalaService {
         }
 
         //Mapear Mensagens
-
-            //Busca mensagem -> filtra por salaId -> usa .map para montar a lista->
-            // -> lista incorpora a response
         List<Mensagem> mensagem_list = mensagemRepository.findBySalaIdOrderByDataDesc(salaId);
 
         List<MensagemDTO> mensagemDTOList = mensagem_list.stream()
@@ -159,5 +189,21 @@ public class SalaService {
                     return dto;
                 })
                 .toList();
+    }
+
+    public void markAsRead(Long salaId, Long clientId) {
+        try {
+            Client client = clientRepository.findById(clientId).orElseThrow();
+            Sala sala = salaRepository.findById(salaId).orElseThrow();
+
+            UserRoomAccess access = userRoomAccessRepository
+                    .findFirstByClientIdAndSalaIdOrderByIdDesc(clientId, salaId)
+                    .orElse(new UserRoomAccess(client, sala, LocalDateTime.now()));
+
+            access.setLastViewedAt(LocalDateTime.now());
+            userRoomAccessRepository.save(access);
+        } catch (Exception e) {
+            System.err.println("⚠️ Erro ao marcar como lido (markAsRead): " + e.getMessage());
+        }
     }
 }

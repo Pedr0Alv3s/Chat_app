@@ -22,6 +22,11 @@ export default function Home() {
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [newRoomName, setNewRoomName] = useState("");
+    const [statsData, setStatsData] = useState({
+        messagesToday: 0,
+        unreadMessages: 0,
+        activeGroups: 0
+    });
 
     // Recuperar usuário do localStorage
     const savedUser = JSON.parse(localStorage.getItem('user') || '{}');
@@ -29,20 +34,24 @@ export default function Home() {
     const token = localStorage.getItem('token');
 
     useEffect(() => {
-        const fetchRooms = async () => {
+        const fetchData = async () => {
             try {
                 setLoading(true);
-                const data = await chatService.getRooms();
-                setRooms(data);
+                const [roomsData, statsInfo] = await Promise.all([
+                    chatService.getRooms(),
+                    chatService.getStats()
+                ]);
+                setRooms(roomsData);
+                setStatsData(statsInfo);
             } catch (error) {
-                console.error("Erro ao buscar salas:", error);
+                console.error("Erro ao buscar dados do dashboard:", error);
             } finally {
                 setLoading(false);
             }
         };
 
         if (token) {
-            fetchRooms();
+            fetchData();
         }
     }, [token]);
 
@@ -68,9 +77,9 @@ export default function Home() {
     );
 
     const stats = [
-        { label: "Mensagens Hoje", value: "0", icon: <IconMessage />, color: "#2563eb" },
+        { label: "Mensagens Hoje", value: statsData.messagesToday.toString(), icon: <IconMessage />, color: "#2563eb" },
         { label: "Grupos Ativos", value: rooms.length.toString(), icon: <IconUsers />, color: "#059669" },
-        { label: "Não Lidas", value: "0", icon: <IconBell />, color: "#d97706" },
+        { label: "Não Lidas", value: statsData.unreadMessages.toString(), icon: <IconBell />, color: "#d97706" },
     ];
 
     return (

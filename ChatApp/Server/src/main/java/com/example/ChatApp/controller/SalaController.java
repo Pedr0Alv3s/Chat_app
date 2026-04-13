@@ -62,4 +62,15 @@ public class SalaController {
 
         return salaService.listMyRooms(client_id);
     }
+
+    @PostMapping("/{salaId}/read")
+    public void markAsRead(@PathVariable Long salaId,
+                           @RequestHeader("Authorization") String token) {
+        Long client_id = (Long) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        salaService.markAsRead(salaId, client_id);
+    }
 }

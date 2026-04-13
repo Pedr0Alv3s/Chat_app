@@ -23,6 +23,18 @@ export const chatService = {
     inviteUser: async (salaId, userName) => {
         const response = await api.post(`/rooms/${salaId}/invite`, { name: userName });
         return response.data;
+    },
+
+    // Buscar estatísticas do dashboard
+    getStats: async () => {
+        const response = await api.get('/api/stats/dashboard');
+        return response.data;
+    },
+
+    // Marcar sala como lida
+    markAsRead: async (salaId) => {
+        const response = await api.post(`/rooms/${salaId}/read`);
+        return response.data;
     }
 };
 
