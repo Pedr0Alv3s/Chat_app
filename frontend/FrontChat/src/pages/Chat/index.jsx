@@ -82,7 +82,12 @@ function Chat() {
                 text: msg.content,
                 timestamp: new Date(msg.data).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             };
-            setMessages(prev => [...prev, newMsg]);
+            
+            setMessages(prev => {
+                // Evita duplicatas se a mesma mensagem chegar via WS mais de uma vez
+                if (prev.some(m => m.id === newMsg.id)) return prev;
+                return [...prev, newMsg];
+            });
         };
 
         const onConnected = () => {

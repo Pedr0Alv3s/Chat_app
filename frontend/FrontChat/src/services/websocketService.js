@@ -14,13 +14,7 @@ class WebSocketService {
         }
         
         if (this.client && this.client.active) {
-            // Se já estiver no processo de conexão (ex: StrictMode chamou duas vezes),
-            // anexamos o callback para não perder a inscrição.
-            const previousCallback = this.client.onConnect;
-            this.client.onConnect = (frame) => {
-                if (previousCallback) previousCallback(frame);
-                if (onConnectCallback) onConnectCallback();
-            };
+            // Se já estiver conectando, apenas aguarda. O onConnect original será chamado.
             return;
         }
 
@@ -57,6 +51,11 @@ class WebSocketService {
     subscribe(topic, callback) {
         if (!this.client || !this.client.connected) {
             console.error('Cannot subscribe: not connected');
+            return;
+        }
+
+        if (this.subscriptions.has(topic)) {
+            console.log(`Already subscribed to ${topic}`);
             return;
         }
 
