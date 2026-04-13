@@ -222,6 +222,22 @@
     font-weight: 500;
 }
 
+.profileInput {
+    background-color: var(--corp-surface);
+    border: 1px solid var(--corp-border);
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 14px;
+    color: var(--corp-text-primary);
+    width: 100%;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.profileInput:focus {
+    border-color: var(--corp-accent);
+}
+
 .editLink {
     font-size: 12px;
     color: var(--corp-accent);
@@ -294,10 +310,43 @@
 
 /* ─── Footer ─── */
 .footerActions {
-    padding-top: 4px;
+    padding-top: 24px;
     border-top: 1px solid var(--corp-border);
     display: flex;
     align-items: center;
+    justify-content: space-between;
+}
+
+.actionGroup {
+    display: flex;
+    gap: 12px;
+}
+
+.saveBtn {
+    background-color: var(--corp-accent);
+    color: white;
+    border: none;
+    padding: 9px 24px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.saveBtn:hover {
+    opacity: 0.9;
+}
+
+.cancelBtn {
+    background-color: transparent;
+    color: var(--corp-text-muted);
+    border: 1px solid var(--corp-border);
+    padding: 9px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
 }
 
 .logoutBtn {

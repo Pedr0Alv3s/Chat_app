@@ -28,6 +28,20 @@ export const authService = {
         const response = await api.post('/auth/register', { name, email, password });
         return response.data;
     },
+    getProfile: async () => {
+        const response = await api.get('/auth/me');
+        return response.data;
+    },
+    updateProfile: async (data) => {
+        const response = await api.put('/auth/profile', data);
+        if (response.data) {
+            // Atualizar o usuário no localStorage para refletir as mudanças (exceto token/senha)
+            const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+            const updatedUser = { ...currentUser, ...response.data };
+            localStorage.setItem('user', JSON.stringify(updatedUser));
+        }
+        return response.data;
+    },
     logout: () => {
         localStorage.removeItem('token');
         localStorage.removeItem('user');

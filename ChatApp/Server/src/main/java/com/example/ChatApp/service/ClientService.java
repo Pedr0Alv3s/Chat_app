@@ -5,6 +5,8 @@ import com.example.ChatApp.dto.auth.ClientResponseDTO;
 import com.example.ChatApp.dto.auth.RegisterRequestDTO;
 import com.example.ChatApp.model.Client;
 import com.example.ChatApp.repository.ClientRepository;
+import com.example.ChatApp.repository.MensagemRepository;
+import com.example.ChatApp.repository.SalaRepository;
 import com.example.ChatApp.security.JwtService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,14 +21,20 @@ public class ClientService {
     PasswordEncoder passwordEncoder;
     // Objeto jwtService;
     JwtService jwtService;
+    MensagemRepository mensagemRepository;
+    SalaRepository salaRepository;
 
     //Metodo construtor da classe;
     public ClientService(ClientRepository clientRepository,
                          PasswordEncoder passwordEncoder,
-                         JwtService jwtService){
+                         JwtService jwtService,
+                         MensagemRepository mensagemRepository,
+                         SalaRepository salaRepository){
         this.clientRepository = clientRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
+        this.mensagemRepository = mensagemRepository;
+        this.salaRepository = salaRepository;
     }
 
     // metodo de login
@@ -78,5 +86,45 @@ public class ClientService {
 
         //Retorna a resposta de entidade cliente criada
         return response;
+    }
+
+    public com.example.ChatApp.dto.auth.ProfileDTO getProfile(Long userId) {
+        Client client = clientRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        com.example.ChatApp.dto.auth.ProfileDTO profile = new com.example.ChatApp.dto.auth.ProfileDTO();
+        profile.setId(client.getId());
+        profile.setName(client.getName());
+        profile.setEmail(client.getEmail());
+        profile.setRole(client.getRole());
+        profile.setDepartment(client.getDepartment());
+        profile.setPhone(client.getPhone());
+        
+        // Contar mensagens e salas
+        profile.setMessagesCount(mensagemRepository.countByClientId(userId));
+        profile.setRoomsCount(salaRepository.countByClientList_Id(userId));
+
+        return profile;
+    }
+
+    public com.example.ChatApp.dto.auth.ProfileDTO updateProfile(Long userId, com.example.ChatApp.dto.auth.UpdateProfileRequestDTO dto) {
+        Client client = clientRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        if (dto.getName() != null) client.setName(dto.getName());
+        if (dto.getEmail() != null) {
+            // Verificar se novo email ja existe em outro usuario
+            Optional<Client> existing = clientRepository.findByEmail(dto.getEmail());
+            if (existing.isPresent() && !existing.get().getId().equals(userId)) {
+                throw new RuntimeException("Email já está sendo usado");
+            }
+            client.setEmail(dto.getEmail());
+        }
+        if (dto.getRole() != null) client.setRole(dto.getRole());
+        if (dto.getDepartment() != null) client.setDepartment(dto.getDepartment());
+        if (dto.getPhone() != null) client.setPhone(dto.getPhone());
+
+        clientRepository.save(client);
+        return getProfile(userId);
     }
 }

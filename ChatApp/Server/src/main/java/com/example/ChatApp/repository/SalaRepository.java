@@ -10,4 +10,5 @@ import java.util.Optional;
 @Repository
 public interface SalaRepository extends JpaRepository<Sala,Long> {
     List<Sala> findByClientList_Id(Long clientId);
+    long countByClientList_Id(Long clientId);
 }

@@ -28,6 +28,15 @@ public class Client {
     @Column(name = "name", nullable = false, length = 20)
     private String name;
 
+    @Column(length = 50)
+    private String role;           // Cargo do usuário
+
+    @Column(length = 50)
+    private String department;     // Departamento
+
+    @Column(length = 20)
+    private String phone;          // Telefone de contato
+
     @ManyToMany(mappedBy = "clientList")
     private List<Sala> salaList;            //Lista de salas da qual o usuário tem acesso;
 }

@@ -32,9 +32,12 @@ public class DataInitializer implements CommandLineRunner {
         // Criar Client (User) de teste se não existir com ID 1
         if (clientRepository.count() == 0) {
             Client client = new Client();
-            client.setName("Usuário Teste");
-            client.setEmail("teste@teste.com");
-            client.setPassword("12345");
+            client.setName("Angelo");
+            client.setEmail("angelo@teste.com");
+            client.setPassword("$2a$10$6H3YVv6F6H7X7V0X7V0X7V0X7V0X7V0X7V0X7V0X7V0X7V0X7V0X7"); // Mock hash para '123456'
+            client.setRole("Desenvolvedor Full Stack");
+            client.setDepartment("Engenharia de Software");
+            client.setPhone("+55 (11) 98888-7777");
             clientRepository.save(client);
             System.out.println("Usuário mockado inserido no BD com sucesso.");
         }
