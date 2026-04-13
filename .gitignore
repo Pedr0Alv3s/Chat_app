@@ -1,0 +1,17 @@
+# Secrets
+ChatApp/Server/src/main/resources/application.properties
+
+# Java / Gradle
+.gradle/
+build/
+bin/
+*.class
+
+# IDEs
+.idea/
+*.iml
+.vscode/
+
+# Frontend (se quiser ignorar aqui também)
+frontend/FrontChat/node_modules/
+frontend/FrontChat/dist/
