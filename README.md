@@ -68,6 +68,78 @@ Salas são os espaços de conversas entre usuários, seus endpoints estão sobre
  -> {salaId}/access -> Rota de acesso de uma sala;
 
 ### Endpoints referentes a chats:
+ -> /chat.send (WebSocket) -> Destino para o envio de mensagens em tempo real.
+
+---
+
+## 🚀 Como Rodar o Projeto
+
+Este guia ajudará você a configurar o ambiente e executar tanto o servidor quanto o cliente.
+
+### 📋 Pré-requisitos
+Antes de começar, você precisará ter instalado em sua máquina:
+*   **Java 17** ou superior.
+*   **Node.js** (v18+) e **npm**.
+*   **PostgreSQL** (Banco de dados relacional).
+*   **RabbitMQ** (Broker de mensageria).
+
+---
+
+### 🛠️ Passo 1: Configuração do RabbitMQ
+O ChatApp utiliza o RabbitMQ com o protocolo STOMP. Siga os passos abaixo no seu terminal (Linux/WSL):
+
+1.  **Instale o RabbitMQ**:
+    ```bash
+    sudo apt update && sudo apt install rabbitmq-server -y
+    ```
+2.  **Habilite os Plugins Necessários**:
+    ```bash
+    sudo rabbitmq-plugins enable rabbitmq_stomp rabbitmq_management
+    ```
+3.  **Inicie o Serviço**:
+    ```bash
+    sudo service rabbitmq-server start
+    ```
+4.  **Crie um Usuário (Opcional)**: O sistema usa `guest/guest` por padrão para localhost, mas você pode configurar outros usuários via painel: [http://localhost:15672](http://localhost:15672).
+
+---
+
+### 🗄️ Passo 2: Configuração do Banco de Dados (PostgreSQL)
+1.  Crie um banco de dados chamado `postgres` no seu servidor PostgreSQL.
+2.  Configure as credenciais no arquivo do backend:
+    `ChatApp/Server/src/main/resources/application.properties`
+    ```properties
+    spring.datasource.url=jdbc:postgresql://localhost:5432/postgres
+    spring.datasource.username=seu_usuario
+    spring.datasource.password=sua_senha
+    ```
+
+---
+
+### ☕ Passo 3: Rodando o Backend (Spring Boot)
+Navegue até a raiz do projeto e execute:
+```bash
+./gradlew :ChatApp:Server:bootRun
+```
+O servidor estará disponível em `http://localhost:8080`.
+
+---
+
+### ⚛️ Passo 4: Rodando o Frontend (React)
+Navegue até a pasta do frontend e inicie o ambiente de desenvolvimento:
+```bash
+cd frontend/FrontChat
+npm install
+npm run dev
+```
+Acesse `http://localhost:5173` no seu navegador.
+
+---
+
+## 🧠 Como funciona a comunicação?
+1.  **Envio**: O Cliente React envia a mensagem via **WebSocket** para o endpoint `/app/chat.send`.
+2.  **Encaminhamento**: O Servidor recebe, valida e envia para uma **Exchange do RabbitMQ**.
+3.  **Processamento**: Um **Worker** (MessageReceiver) consome a mensagem da fila, salva no Banco de Dados e então faz o broadcast para todos os usuários inscritos no tópico da sala via **STOMP**.
 
 
 
