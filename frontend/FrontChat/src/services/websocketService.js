@@ -8,7 +8,21 @@ class WebSocketService {
     }
 
     connect(token, onConnectCallback) {
-        if (this.client && this.client.connected) return;
+        if (this.client && this.client.connected) {
+            if (onConnectCallback) onConnectCallback();
+            return;
+        }
+        
+        if (this.client && this.client.active) {
+            // Se já estiver no processo de conexão (ex: StrictMode chamou duas vezes),
+            // anexamos o callback para não perder a inscrição.
+            const previousCallback = this.client.onConnect;
+            this.client.onConnect = (frame) => {
+                if (previousCallback) previousCallback(frame);
+                if (onConnectCallback) onConnectCallback();
+            };
+            return;
+        }
 
         // O backend espera o token na query string conforme o WebSocketAuthInterceptor.java
         const socketUrl = `http://localhost:8080/ws?token=${token}`;

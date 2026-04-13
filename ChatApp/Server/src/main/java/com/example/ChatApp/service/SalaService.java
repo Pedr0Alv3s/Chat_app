@@ -93,7 +93,7 @@ public class SalaService {
                 .orElseThrow(() -> new RuntimeException("Sala não encontrada"));
 
         //Valicação de pertencimento na lista da sala;
-        boolean pertence = sala.getClientList()
+        boolean pertence = sala.getClientList() != null && sala.getClientList()
                 .stream()
                 .anyMatch(u -> u.getId().equals(client_id));
 
@@ -102,15 +102,18 @@ public class SalaService {
         }
 
         //Mapear participantes -> monta lista com resposta de só alguns campos selecionados no DTO
-        List<ParticipanteDTO> client_list= sala.getClientList()
-                .stream()
-                .map(u -> {
-                    ParticipanteDTO dto = new ParticipanteDTO();
-                    dto.setClient_id(u.getId());
-                    dto.setName(u.getName());
-                    return dto;
-                })
-                .toList();
+        List<ParticipanteDTO> client_list = new java.util.ArrayList<>();
+        if (sala.getClientList() != null) {
+            client_list = sala.getClientList()
+                    .stream()
+                    .map(u -> {
+                        ParticipanteDTO dto = new ParticipanteDTO();
+                        dto.setClient_id(u.getId());
+                        dto.setName(u.getName());
+                        return dto;
+                    })
+                    .toList();
+        }
 
         //Mapear Mensagens
 
@@ -122,8 +125,13 @@ public class SalaService {
                 .map(m->{
                     MensagemDTO dto = new MensagemDTO();
                     dto.setId(m.getId());
-                    dto.setCreator_name(m.getClient().getName());
-                    dto.setCreator_Id(m.getClient().getId());
+                    if (m.getClient() != null) {
+                        dto.setCreator_name(m.getClient().getName());
+                        dto.setCreator_Id(m.getClient().getId());
+                    } else {
+                        dto.setCreator_name("Usuário Desconhecido");
+                        dto.setCreator_Id(0L);
+                    }
                     dto.setContent(m.getContent());
                     dto.setData(m.getData());
                     return dto;

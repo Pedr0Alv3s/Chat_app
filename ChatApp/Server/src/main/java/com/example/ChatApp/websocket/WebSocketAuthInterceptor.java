@@ -25,52 +25,52 @@ public class WebSocketAuthInterceptor implements HandshakeInterceptor {
                                    WebSocketHandler wsHandler,
                                    Map<String, Object> attributes) {
 
-        System.out.println(">>> Handshake chegou no interceptor");
-
-        //return true;
+        System.out.println(">>> Handshake chegou no interceptor (MOCK MODE)");
 
         try {
-            String query = request.getURI().getQuery();
+            /* 
+             * Mock: Simula o usuário logado com id 1L
+             * (Para testar o chat real-time sem token válido)
+             */
+            Long mockUserId = 1L;
+            attributes.put("userId", mockUserId);
+            System.out.println("WebSocket MOCK autenticado: userId=" + mockUserId);
+            return true;
 
+            /* LOGICA ORIGINAL COMENTADA
+            String query = request.getURI().getQuery();
             if (query == null) {
                 System.out.println("❌ Sem query");
                 return false;
             }
 
-            // 🔹 Parse seguro dos parâmetros
             Map<String, String> params = Arrays.stream(query.split("&"))
                     .map(p -> p.split("="))
                     .filter(p -> p.length == 2)
                     .collect(Collectors.toMap(p -> p[0], p -> p[1]));
 
             String token = params.get("token");
-
             if (token == null || token.isBlank()) {
                 System.out.println("Token ausente");
                 return false;
             }
 
-            // 🔹 Validação do token
             if (!jwtService.isValid(token)) {
                 System.out.println("Token inválido");
                 return false;
             }
 
             Long userId = jwtService.extractUserId(token);
-
-            // 🔹 Salva na sessão do WebSocket
             attributes.put("userId", userId);
-
             System.out.println("WebSocket autenticado: userId=" + userId);
-
             return true;
-
+            */
         } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
 
-}
+    }
     @Override
     public void afterHandshake(ServerHttpRequest request,
                                ServerHttpResponse response,

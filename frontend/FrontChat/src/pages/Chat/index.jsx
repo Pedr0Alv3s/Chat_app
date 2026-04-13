@@ -97,7 +97,6 @@ function Chat() {
         };
     }, [currentSalaId, token]);
 
-    // Role para baixo ao receber mensagens
     useEffect(() => {
         messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
