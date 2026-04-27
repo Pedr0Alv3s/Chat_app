@@ -1,56 +1,25 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import styles from "./styles.module.css";
+import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header";
 import { getInitials, getAvatarColor } from "../../utils/avatarUtils";
 import { authService } from "../../services/api";
+import Toast from "../../components/Toast";
 import {
     IconUsers,
     IconBell,
     IconLogOut,
     IconProfile,
+    IconShieldCheck,
+    IconSettings,
+    IconCheck
 } from "../../components/Icons";
 
 function StatBadge({ label, value, color }) {
     return (
         <div className={styles.statBadge}>
-            <span className={styles.statBadgeValue} style={{ color }}>{value}</span>
             <span className={styles.statBadgeLabel}>{label}</span>
-        </div>
-    );
-}
-
-function InfoRow({ label, value, name, isEditing, onChange, editable }) {
-    return (
-        <div className={styles.infoRow}>
-            <div style={{ flex: 1 }}>
-                <span className={styles.infoLabel}>{label}</span>
-                {isEditing && editable ? (
-                    <input
-                        name={name}
-                        className={styles.profileInput}
-                        value={value || ""}
-                        onChange={onChange}
-                    />
-                ) : (
-                    <span className={styles.infoValue}>{value || "Não informado"}</span>
-                )}
-            </div>
-        </div>
-    );
-}
-
-function Toggle({ label, checked }) {
-    const [on, setOn] = useState(checked);
-    return (
-        <div className={styles.toggleRow}>
-            <span className={styles.infoValue}>{label}</span>
-            <button
-                className={`${styles.toggle} ${on ? styles.toggleOn : ""}`}
-                onClick={() => setOn(v => !v)}
-                aria-label={label}
-            >
-                <span className={styles.toggleKnob} />
-            </button>
+            <span className={styles.statBadgeValue} style={{ color }}>{value}</span>
         </div>
     );
 }
@@ -60,6 +29,18 @@ export default function Perfil() {
     const [isEditing, setIsEditing] = useState(false);
     const [formData, setFormData] = useState({});
     const [loading, setLoading] = useState(true);
+    const [isNavigating, setIsNavigating] = useState(false);
+    const [toast, setToast] = useState({ show: false, message: "", type: "info" });
+    const navigate = useNavigate();
+    const token = localStorage.getItem('token');
+
+    const showToast = (message, type = "info") => {
+        setToast({ show: true, message, type });
+    };
+
+    const closeToast = useCallback(() => {
+        setToast(prev => ({ ...prev, show: false }));
+    }, []);
 
     useEffect(() => {
         const fetchProfile = async () => {
@@ -74,8 +55,27 @@ export default function Perfil() {
                 setLoading(false);
             }
         };
-        fetchProfile();
-    }, []);
+        if (token) {
+            fetchProfile();
+        } else {
+            navigate("/login");
+            setLoading(false);
+        }
+    }, [token, navigate]);
+
+    const handleLogout = () => {
+        showToast("Sessão encerrada com sucesso. Até logo!", "success");
+        setTimeout(() => setIsNavigating(true), 1600);
+        setTimeout(() => {
+            authService.logout();
+            navigate("/login");
+        }, 2400);
+    };
+
+    const handlePageTransition = (path) => {
+        setIsNavigating(true);
+        setTimeout(() => navigate(path), 600);
+    };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -87,25 +87,25 @@ export default function Perfil() {
             const updated = await authService.updateProfile(formData);
             setProfile(updated);
             setIsEditing(false);
-            alert("Perfil atualizado com sucesso!");
+            showToast("Perfil atualizado com sucesso!", "success");
         } catch (error) {
             console.error("Erro ao salvar:", error);
-            alert("Erro ao atualizar perfil.");
+            showToast("Erro ao atualizar perfil.", "error");
         }
     };
 
     if (loading || !profile) {
         return (
-            <div className={styles.container}>
-                <Header />
+            <div className={`${styles.container} animate-page-in`}>
+                <Header onNavigate={handlePageTransition} />
                 <div className={styles.mainContent}>Carregando...</div>
             </div>
         );
     }
 
     return (
-        <div className={styles.container}>
-            <Header />
+        <div className={`${styles.container} animate-page-in ${isNavigating ? styles.isNavigating : ""}`}>
+            <Header onNavigate={handlePageTransition} />
 
             <main className={styles.mainContent}>
                 <section className={styles.hero}>
@@ -119,123 +119,105 @@ export default function Perfil() {
                         </div>
                         <div className={styles.heroInfo}>
                             <h1 className={styles.userName}>{profile.name}</h1>
-                            <p className={styles.userRole}>{profile.role || "Cargo não definido"}</p>
+                            <p className={styles.userRole}>{profile.role || "Membro Platinum"}</p>
                             <div className={styles.heroMeta}>
                                 <span className={styles.onlineDot} />
                                 <span className={styles.onlineLabel}>Online agora</span>
-                                <span className={styles.heroDivider}>·</span>
-                                <span className={styles.userEmail}>{profile.email}</span>
                             </div>
-                        </div>
-                        <div className={styles.heroStats}>
-                            <StatBadge label="Mensagens" value={profile.messagesCount} color="var(--corp-accent)" />
-                            <StatBadge label="Grupos" value={profile.roomsCount} color="#059669" />
                         </div>
                     </div>
                 </section>
 
-                <div className={styles.grid}>
+                <div className={styles.profileGrid}>
                     <div className={styles.card}>
-                        <div className={styles.cardHeader}>
-                            <div className={styles.cardIcon} style={{ background: "#eff6ff" }}>
-                                <IconProfile size={17} />
+                        <h2 className={styles.cardTitle}>
+                            <IconProfile size={20} /> Informações Pessoais
+                        </h2>
+                        
+                        <div className={styles.formGrid}>
+                            <div className={styles.formGroup}>
+                                <label className={styles.label}>Nome Completo</label>
+                                <input
+                                    className={styles.input}
+                                    name="name"
+                                    value={formData.name || ""}
+                                    onChange={handleChange}
+                                    disabled={!isEditing}
+                                />
                             </div>
-                            <h2 className={styles.cardTitle}>Dados Pessoais</h2>
+                            <div className={styles.formGroup}>
+                                <label className={styles.label}>Endereço de E-mail</label>
+                                <input
+                                    className={styles.input}
+                                    name="email"
+                                    value={formData.email || ""}
+                                    disabled={true} // Email geralmente não se edita assim
+                                />
+                            </div>
+                            <div className={`${styles.formGroup} ${styles.fullWidth}`}>
+                                <label className={styles.label}>Bio / Descrição</label>
+                                <input
+                                    className={styles.input}
+                                    placeholder="Conte um pouco sobre você..."
+                                    name="bio"
+                                    value={formData.bio || ""}
+                                    onChange={handleChange}
+                                    disabled={!isEditing}
+                                />
+                            </div>
                         </div>
-                        <div className={styles.infoList}>
-                            <InfoRow 
-                                label="Nome Completo" 
-                                value={isEditing ? formData.name : profile.name} 
-                                name="name"
-                                editable
-                                isEditing={isEditing}
-                                onChange={handleChange}
-                            />
-                            <InfoRow 
-                                label="E-mail Corporativo" 
-                                value={isEditing ? formData.email : profile.email} 
-                                name="email"
-                                editable
-                                isEditing={isEditing}
-                                onChange={handleChange}
-                            />
-                            <InfoRow 
-                                label="Telefone" 
-                                value={isEditing ? formData.phone : profile.phone} 
-                                name="phone"
-                                editable
-                                isEditing={isEditing}
-                                onChange={handleChange}
-                            />
+
+                        <div className={styles.actions}>
+                            {isEditing ? (
+                                <>
+                                    <button className={`${styles.btn} ${styles.btnSecondary}`} onClick={() => {
+                                        setIsEditing(false);
+                                        setFormData(profile);
+                                    }}>Cancelar</button>
+                                    <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={handleSave}>
+                                        <IconCheck size={18} /> Salvar Alterações
+                                    </button>
+                                </>
+                            ) : (
+                                <button className={`${styles.btn} ${styles.btnSecondary}`} onClick={() => setIsEditing(true)}>
+                                    <IconSettings size={18} /> Editar Perfil
+                                </button>
+                            )}
                         </div>
                     </div>
 
-                    <div className={styles.card}>
-                        <div className={styles.cardHeader}>
-                            <div className={styles.cardIcon} style={{ background: "#f0fdf4" }}>
-                                <IconProfile size={17} />
+                    <div className={styles.infoBadges}>
+                        <div className={styles.card}>
+                            <h2 className={styles.cardTitle}>
+                                <IconShieldCheck size={20} /> Segurança
+                            </h2>
+                            <div className={styles.statusCard}>
+                                <IconShieldCheck size={18} /> Conta Verificada
                             </div>
-                            <h2 className={styles.cardTitle}>Profissional</h2>
+                            <div style={{ marginTop: '20px' }}>
+                                <StatBadge label="Sessão" value="Ativa" color="#4ade80" />
+                                <StatBadge label="MFA" value="Desativado" color="#f87171" />
+                            </div>
                         </div>
-                        <div className={styles.infoList}>
-                             <InfoRow 
-                                label="Cargo" 
-                                value={isEditing ? formData.role : profile.role} 
-                                name="role"
-                                editable
-                                isEditing={isEditing}
-                                onChange={handleChange}
-                            />
-                            <InfoRow 
-                                label="Departamento" 
-                                value={isEditing ? formData.department : profile.department} 
-                                name="department"
-                                editable
-                                isEditing={isEditing}
-                                onChange={handleChange}
-                            />
-                        </div>
-                    </div>
 
-                    <div className={styles.card}>
-                        <div className={styles.cardHeader}>
-                            <div className={styles.cardIcon} style={{ background: "#fff7ed" }}>
-                                <IconBell size={17} />
-                            </div>
-                            <h2 className={styles.cardTitle}>Preferências</h2>
-                        </div>
-                        <div className={styles.infoList}>
-                            <Toggle label="Notificações Desktop" checked={true} />
-                            <Toggle label="Sons de Mensagem" checked={true} />
-                        </div>
+                        <button
+                            className={`${styles.btn} ${styles.logoutBtn}`}
+                            onClick={handleLogout}
+                        >
+                            <IconLogOut size={18} /> Encerrar Sessão
+                        </button>
                     </div>
                 </div>
-
-                <div className={styles.footerActions}>
-                    <div className={styles.actionGroup}>
-                        {isEditing ? (
-                            <>
-                                <button className={styles.saveBtn} onClick={handleSave}>Salvar Alterações</button>
-                                <button className={styles.cancelBtn} onClick={() => {
-                                    setIsEditing(false);
-                                    setFormData(profile);
-                                }}>Cancelar</button>
-                            </>
-                        ) : (
-                            <button className={styles.saveBtn} onClick={() => setIsEditing(true)}>Editar Perfil</button>
-                        )}
-                    </div>
-                    
-                    <button
-                        className={styles.logoutBtn}
-                        onClick={() => authService.logout()}
-                    >
-                        <IconLogOut size={15} />
-                        Encerrar Sessão
-                    </button>
-                </div>
-
             </main>
+
+            {toast.show && (
+                <Toast
+                    key={toast.message + toast.type}
+                    message={toast.message}
+                    type={toast.type}
+                    onClose={closeToast}
+                />
+            )}
         </div>
     );
 }

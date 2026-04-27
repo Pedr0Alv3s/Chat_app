@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import styles from "./styles.module.css";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header";
 import { getInitials, getAvatarColor } from "../../utils/avatarUtils";
 import { authService } from "../../services/api";
 import chatService from "../../services/chatService";
+import Toast from "../../components/Toast";
 import {
     IconSearch,
     IconMessage,
@@ -22,11 +23,21 @@ export default function Home() {
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [newRoomName, setNewRoomName] = useState("");
+    const [isNavigating, setIsNavigating] = useState(false);
+    const [toast, setToast] = useState({ show: false, message: "", type: "info" });
     const [statsData, setStatsData] = useState({
         messagesToday: 0,
         unreadMessages: 0,
         activeGroups: 0
     });
+
+    const showToast = (message, type = "info") => {
+        setToast({ show: true, message, type });
+    };
+
+    const closeToast = useCallback(() => {
+        setToast(prev => ({ ...prev, show: false }));
+    }, []);
 
     // Recuperar usuário do localStorage
     const savedUser = JSON.parse(localStorage.getItem('user') || '{}');
@@ -52,8 +63,20 @@ export default function Home() {
 
         if (token) {
             fetchData();
+        } else {
+            navigate("/login");
+            setLoading(false);
         }
-    }, [token]);
+    }, [token, navigate]);
+
+    const handleLogout = () => {
+        showToast("Sessão encerrada com sucesso. Até logo!", "success");
+        setTimeout(() => setIsNavigating(true), 1600);
+        setTimeout(() => {
+            authService.logout();
+            navigate("/login");
+        }, 2400);
+    };
 
     const handleCreateRoom = async (e) => {
         e.preventDefault();
@@ -82,9 +105,14 @@ export default function Home() {
         { label: "Não Lidas", value: statsData.unreadMessages.toString(), icon: <IconBell />, color: "#d97706" },
     ];
 
+    const handlePageTransition = (path) => {
+        setIsNavigating(true);
+        setTimeout(() => navigate(path), 600);
+    };
+
     return (
-        <div className={styles.container}>
-            <Header />
+        <div className={`${styles.container} animate-page-in ${isNavigating ? styles.isNavigating : ""}`}>
+            <Header onNavigate={handlePageTransition} />
 
             <div className={styles.mainContent}>
                 <div className={styles.leftCol}>
@@ -93,7 +121,7 @@ export default function Home() {
                             <span className={styles.greetingText}>Bom dia, <strong>{userName}</strong> 👋</span>
                             <span className={styles.greetingDate}>{new Date().toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" })}</span>
                         </div>
-                        <button className={styles.logoutBtn} onClick={() => authService.logout()} title="Sair">
+                        <button className={styles.logoutBtn} onClick={handleLogout} title="Sair">
                             <IconLogOut /> Sair
                         </button>
                     </div>
@@ -202,6 +230,15 @@ export default function Home() {
                         </form>
                     </div>
                 </div>
+            )}
+            {/* Toast de notificações */}
+            {toast.show && (
+                <Toast
+                    key={toast.message + toast.type}
+                    message={toast.message}
+                    type={toast.type}
+                    onClose={closeToast}
+                />
             )}
         </div>
     );

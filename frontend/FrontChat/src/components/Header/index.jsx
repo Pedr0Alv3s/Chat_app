@@ -5,9 +5,18 @@ import { getInitials, getAvatarColor } from "../../utils/avatarUtils";
 import { IconHome, IconChat, IconProfile } from "../../components/Icons";
 import chatService from "../../services/chatService";
 
-function Header() {
+function Header({ onNavigate }) {
     const navigate = useNavigate();
     const location = useLocation();
+
+    const safeNavigate = (path) => {
+        if (onNavigate) {
+            onNavigate(path);
+        } else {
+            navigate(path);
+        }
+        setIsDropdownOpen(false);
+    };
     const dropdownRef = useRef(null);
     const chatBtnRef = useRef(null);
 
@@ -69,14 +78,14 @@ function Header() {
 
     return (
         <header className={styles.header}>
-            <div className={styles.logoArea} onClick={() => navigate("/home")} title="Início">
+            <div className={styles.logoArea} onClick={() => safeNavigate("/home")} title="Início">
                 <div className={styles.logo}>P</div>
             </div>
 
             <nav className={styles.nav}>
                 <button
                     className={`${styles.navItem} ${isHome ? styles.active : ""}`}
-                    onClick={() => { navigate("/home"); setIsDropdownOpen(false); }}
+                    onClick={() => safeNavigate("/home")}
                     title="Início"
                 >
                     <IconHome />
@@ -102,7 +111,7 @@ function Header() {
                                     <div className={styles.emptyDropdown}>Nenhuma sala encontrada</div>
                                 ) : (
                                     rooms.map(chat => (
-                                        <button key={chat.id} className={styles.dropdownItem} onClick={() => handleSelectChat(chat.id)}>
+                                        <button key={chat.id} className={styles.dropdownItem} onClick={() => safeNavigate(`/chat/${chat.id}`)}>
                                             <div className={styles.itemAvatar} style={{ background: getAvatarColor(chat.name) }}>
                                                 {getInitials(chat.name)}
                                             </div>
@@ -120,7 +129,7 @@ function Header() {
 
                 <button
                     className={`${styles.navItem} ${location.pathname === "/perfil" ? styles.active : ""}`}
-                    onClick={() => { navigate("/perfil"); setIsDropdownOpen(false); }}
+                    onClick={() => safeNavigate("/perfil")}
                     title="Perfil"
                 >
                     <IconProfile />
@@ -133,7 +142,7 @@ function Header() {
                     className={styles.avatar}
                     style={{ backgroundColor: getAvatarColor(savedUser.name || "User") }}
                     title={savedUser.name || "Seu perfil"}
-                    onClick={() => navigate("/perfil")}
+                    onClick={() => safeNavigate("/perfil")}
                 >
                     {userInitial}
                 </div>

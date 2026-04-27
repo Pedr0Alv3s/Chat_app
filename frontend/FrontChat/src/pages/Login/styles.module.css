@@ -4,13 +4,97 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('../../assets/login-bg.png');
-  background-size: cover;
-  background-position: center;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  overflow: hidden;
+  position: relative;
+  background-color: #0a0a0c;
+  transition: opacity 0.8s ease-in-out, transform 0.8s ease-in-out;
+}
+
+.pageWrapper.isNavigating {
+  opacity: 0;
+  transform: scale(1.05); /* Leve zoom out ao sair */
+  pointer-events: none;
+}
+
+.meshContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.6;
+  transition: transform 0.3s ease-out;
+  pointer-events: none;
+}
+
+.blob1 {
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, #2563eb, transparent);
+  top: -100px;
+  left: -100px;
+  animation: float1 8s infinite alternate ease-in-out;
+}
+
+.blob2 {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, #7c3aed, transparent);
+  bottom: -50px;
+  right: -50px;
+  animation: float2 10s infinite alternate ease-in-out;
+}
+
+.blob3 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, #06b6d4, transparent);
+  top: 50%;
+  left: 50%;
+  margin-top: -200px;
+  margin-left: -200px;
+  animation: float3 6s infinite alternate ease-in-out;
+}
+
+.noiseOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('https://grainy-gradients.vercel.app/noise.svg');
+  opacity: 0.2;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+@keyframes float1 {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  100% { transform: translate(150px, 100px) rotate(30deg); }
+}
+
+@keyframes float2 {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(-100px, -150px) scale(1.2); }
+}
+
+@keyframes float3 {
+  0% { transform: translate(-100px, 100px); }
+  100% { transform: translate(100px, -100px); }
 }
 
 .container {
+  position: relative;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
