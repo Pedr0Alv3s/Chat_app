@@ -82,12 +82,15 @@ Antes de começar, você precisará ter instalado em sua máquina:
 *   **Node.js** (v18+) e **npm**.
 *   **PostgreSQL** (Banco de dados relacional).
 *   **RabbitMQ** (Broker de mensageria).
+*   **NGINX** (Proxy reverso).
 
 ---
 
 ### 🛠️ Passo 1: Configuração do RabbitMQ
 O ChatApp utiliza o RabbitMQ com o protocolo STOMP. Siga os passos abaixo no seu terminal (Linux/WSL):
+Guia de instalação: https://www.rabbitmq.com/docs/download#installation-guides
 
+Para modelos linux:
 1.  **Instale o RabbitMQ**:
     ```bash
     sudo apt update && sudo apt install rabbitmq-server -y
@@ -104,7 +107,7 @@ O ChatApp utiliza o RabbitMQ com o protocolo STOMP. Siga os passos abaixo no seu
 
 ---
 
-### 🗄️ Passo 2: Configuração do Banco de Dados (PostgreSQL)
+###  Passo 2: Configuração do Banco de Dados (PostgreSQL)
 1.  Crie um banco de dados chamado `postgres` no seu servidor PostgreSQL.
 2.  Configure as credenciais no arquivo do backend:
     `ChatApp/Server/src/main/resources/application.properties`
@@ -112,14 +115,72 @@ O ChatApp utiliza o RabbitMQ com o protocolo STOMP. Siga os passos abaixo no seu
     spring.datasource.url=jdbc:postgresql://localhost:5432/postgres
     spring.datasource.username=seu_usuario
     spring.datasource.password=sua_senha
+    spring.jpa.hibernate.ddl-auto = update
+    server.port=${PORT:8081} ## Porta padrão se não fornecida via --server.port
     ```
 
 ---
 
-### ☕ Passo 3: Rodando o Backend (Spring Boot)
+###  Passo 3: Configurando o NGINGX:
+1. **Instale o NGINGX**: https://nginx.org/en/download.html
+2. ** Configure o nginx.conf
+    ```bash
+   #user  nobody;
+   worker_processes  1;
+   
+   #error_log  logs/error.log;
+   #error_log  logs/error.log  notice;
+   #error_log  logs/error.log  info;
+   
+   #pid        logs/nginx.pid;
+   
+   
+   events {
+       worker_connections  1024;
+   }
+   
+   
+   http {
+       upstream chat_backend {
+           # Define as instâncias do servidor Spring Boot
+           server localhost:8081;
+           server localhost:8082;
+       }
+   
+       server {
+           listen 8080;
+           server_name localhost;
+   
+           # Configuração para WebSocket (STOMP)
+           location /ws {
+               proxy_pass http://chat_backend;
+               proxy_http_version 1.1;
+               proxy_set_header Upgrade $http_upgrade;
+               proxy_set_header Connection "Upgrade";
+               proxy_set_header Host $host;
+               
+               # Timeouts para evitar que a conexão caia prematuramente
+               proxy_read_timeout 86400s;
+               proxy_send_timeout 86400s;
+           }
+   
+           # Configuração para API REST (Login, Cadastro, etc)
+           location / {
+               proxy_pass http://chat_backend;
+               proxy_set_header Host $host;
+               proxy_set_header X-Real-IP $remote_addr;
+               proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+               proxy_set_header X-Forwarded-Proto $scheme;
+           }
+       }
+   }
+    ```
+    3. Inicie o nginx.exe  
+    
+###  Passo 4: Rodando uma instância do Backend (Spring Boot)
 Navegue até a raiz do projeto e execute:
 ```bash
-./gradlew :ChatApp:Server:bootRun
+./gradlew :ChatApp:Server:bootRun --args='--server.port=[porta desejada] ex 8081, 8082
 ```
 O servidor estará disponível em `http://localhost:8080`.
 
