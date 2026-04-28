@@ -4,7 +4,7 @@ import SockJS from 'sockjs-client';
 class WebSocketService {
     constructor() {
         this.client = null;
-        this.subscriptions = new Map();
+        this.subscriptions = new Map(); // Armazena { topic: { subscription, callback } }
     }
 
     connect(token, onConnectCallback) {
@@ -14,70 +14,79 @@ class WebSocketService {
         }
         
         if (this.client && this.client.active) {
-            // Se já estiver conectando, apenas aguarda. O onConnect original será chamado.
             return;
         }
 
-        // O backend espera o token na query string conforme o WebSocketAuthInterceptor.java
         const socketUrl = `http://localhost:8080/ws?token=${token}`;
         
         this.client = new Client({
-            brokerURL: `ws://localhost:8080/ws?token=${token}`, // Para ambientes sem SockJS
-            connectHeaders: {},
-            debug: (str) => console.log('STOMP:', str),
-            reconnectDelay: 5000,
+            brokerURL: `ws://localhost:8080/ws?token=${token}`,
+            reconnectDelay: 3000, // Tenta reconectar a cada 3 segundos em caso de queda
             heartbeatIncoming: 4000,
             heartbeatOutgoing: 4000,
+            debug: (str) => console.log('STOMP:', str),
         });
 
-        // Caso o brokerURL falhe (ex: proxy), podemos usar webSocketFactory com SockJS
         this.client.webSocketFactory = () => {
             return new SockJS(socketUrl);
         };
 
         this.client.onConnect = (frame) => {
-            console.log('Connected to WebSocket');
+            console.log('>>> WebSocket Conectado (ou Reconectado)');
+            
+            // Lógica de Ouro: Reinscreve automaticamente em todos os tópicos ativos
+            this.subscriptions.forEach((subData, topic) => {
+                console.log(`>>> Reinscrevendo automaticamente no tópico: ${topic}`);
+                const newSub = this.client.subscribe(topic, (message) => {
+                    subData.callback(JSON.parse(message.body));
+                });
+                // Atualiza a referência da subscrição, mantendo o mesmo callback
+                this.subscriptions.set(topic, { subscription: newSub, callback: subData.callback });
+            });
+
             if (onConnectCallback) onConnectCallback(frame);
+        };
+
+        this.client.onDisconnect = () => {
+            console.warn('>>> WebSocket Desconectado. Tentando reconectar via NGINX...');
         };
 
         this.client.onStompError = (frame) => {
             console.error('STOMP error', frame.headers['message']);
-            console.error('Details:', frame.body);
         };
 
         this.client.activate();
     }
 
     subscribe(topic, callback) {
-        if (!this.client || !this.client.connected) {
-            console.error('Cannot subscribe: not connected');
-            return;
-        }
-
         if (this.subscriptions.has(topic)) {
-            console.log(`Already subscribed to ${topic}`);
             return;
         }
 
-        const subscription = this.client.subscribe(topic, (message) => {
-            callback(JSON.parse(message.body));
-        });
+        // Se estiver conectado, se inscreve na hora. 
+        // Se não, o onConnect cuidará disso quando a conexão subir.
+        let subscription = null;
+        if (this.client && this.client.connected) {
+            subscription = this.client.subscribe(topic, (message) => {
+                callback(JSON.parse(message.body));
+            });
+        }
         
-        this.subscriptions.set(topic, subscription);
-        return subscription;
+        // Guardamos o tópico e o callback para caso de reconexão
+        this.subscriptions.set(topic, { subscription, callback });
     }
 
     unsubscribe(topic) {
-        const subscription = this.subscriptions.get(topic);
-        if (subscription) {
-            subscription.unsubscribe();
-            this.subscriptions.delete(topic);
+        const subData = this.subscriptions.get(topic);
+        if (subData && subData.subscription) {
+            subData.subscription.unsubscribe();
         }
+        this.subscriptions.delete(topic);
     }
 
     send(destination, payload) {
         if (!this.client || !this.client.connected) {
-            console.error('Cannot send: not connected');
+            console.error('Não é possível enviar: WebSocket não conectado');
             return;
         }
 
@@ -91,6 +100,7 @@ class WebSocketService {
         if (this.client) {
             this.client.deactivate();
             this.client = null;
+            this.subscriptions.clear();
         }
     }
 }

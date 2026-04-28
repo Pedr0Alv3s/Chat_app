@@ -28,11 +28,11 @@ public class SalaService {
     MensagemRepository mensagemRepository;
     UserRoomAccessRepository userRoomAccessRepository;
 
-    //Seta objeto de Service referente a sala
+    // Seta objeto de Service referente a sala
     public SalaService(SalaRepository salaRepository,
-                       ClientRepository clientRepository,
-                       MensagemRepository mensagemRepository,
-                       UserRoomAccessRepository userRoomAccessRepository){
+            ClientRepository clientRepository,
+            MensagemRepository mensagemRepository,
+            UserRoomAccessRepository userRoomAccessRepository) {
         this.salaRepository = salaRepository;
         this.clientRepository = clientRepository;
         this.mensagemRepository = mensagemRepository;
@@ -49,8 +49,8 @@ public class SalaService {
         return new DashboardStatsDTO(messagesToday, unreadMessages, activeGroups);
     }
 
-    //Função create da sala
-    public SalaResponseDTO create(CreateSalaRequestDTO dto, Long creator_id){
+    // Função create da sala
+    public SalaResponseDTO create(CreateSalaRequestDTO dto, Long creator_id) {
         // ... (resto do método igual)
         Client client = clientRepository.findById(creator_id)
                 .orElseThrow();
@@ -70,14 +70,14 @@ public class SalaService {
         return response;
     }
 
-    //Metodo de convite para salas;
-    public InviteResponseDTO invite(InviteRequestDTO dto, Long salaId){
+    // Metodo de convite para salas;
+    public InviteResponseDTO invite(InviteRequestDTO dto, Long salaId) {
         Optional<Client> optionalClient = clientRepository.findByName(dto.getName());
-        if(optionalClient.isEmpty()){
+        if (optionalClient.isEmpty()) {
             throw new RuntimeException("Usuário não encontrado");
         }
 
-        //procura sala por id recebido (provavelmente desnecessario)
+        // procura sala por id recebido (provavelmente desnecessario)
         Sala sala = salaRepository.findById(salaId).orElseThrow();
 
         Client invitedClient = optionalClient.get();
@@ -99,20 +99,20 @@ public class SalaService {
         return response;
     }
 
-    //Metodo de acesso a pagina da sala, irá carregar as listas de
-    //participantes e mensagens
+    // Metodo de acesso a pagina da sala, irá carregar as listas de
+    // participantes e mensagens
     public AccessResponseDTO access(Long salaId, Long client_id) {
 
         // Buscar sala;
         Sala sala = salaRepository.findById(salaId)
                 .orElseThrow(() -> new RuntimeException("Sala não encontrada"));
 
-        //Valicação de pertencimento na lista da sala;
+        // Valicação de pertencimento na lista da sala;
         boolean pertence = sala.getClientList() != null && sala.getClientList()
                 .stream()
                 .anyMatch(u -> u.getId().equals(client_id));
 
-        if(!pertence){
+        if (!pertence) {
             throw new RuntimeException("Acesso negado");
         }
 
@@ -124,7 +124,7 @@ public class SalaService {
                 UserRoomAccess access = userRoomAccessRepository
                         .findFirstByClientIdAndSalaIdOrderByIdDesc(client_id, salaId)
                         .orElse(new UserRoomAccess(client, sala, LocalDateTime.now()));
-                
+
                 access.setLastViewedAt(LocalDateTime.now());
                 userRoomAccessRepository.save(access);
                 System.out.println(">>> Marcado como lido: User " + client_id + " na Sala " + salaId);
@@ -134,7 +134,8 @@ public class SalaService {
         }
         // ---------------------------------------------------
 
-        //Mapear participantes -> monta lista com resposta de só alguns campos selecionados no DTO
+        // Mapear participantes -> monta lista com resposta de só alguns campos
+        // selecionados no DTO
         List<ParticipanteDTO> client_list = new java.util.ArrayList<>();
         if (sala.getClientList() != null) {
             client_list = sala.getClientList()
@@ -148,11 +149,11 @@ public class SalaService {
                     .toList();
         }
 
-        //Mapear Mensagens
+        // Mapear Mensagens
         List<Mensagem> mensagem_list = mensagemRepository.findBySalaIdOrderByDataDesc(salaId);
 
         List<MensagemDTO> mensagemDTOList = mensagem_list.stream()
-                .map(m->{
+                .map(m -> {
                     MensagemDTO dto = new MensagemDTO();
                     dto.setId(m.getId());
                     if (m.getClient() != null) {
@@ -167,7 +168,7 @@ public class SalaService {
                     return dto;
                 }).toList();
 
-        //Formação da resposta;
+        // Formação da resposta;
         AccessResponseDTO response = new AccessResponseDTO();
         response.setSala_id(salaId);
         response.setSala_name(sala.getName());

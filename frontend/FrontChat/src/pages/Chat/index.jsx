@@ -27,7 +27,7 @@ function Chat() {
     const messageEndRef = useRef(null);
 
     const { salaId } = useParams();
-    const currentSalaId = salaId || 1; 
+    const currentSalaId = salaId || 1;
     const savedUser = JSON.parse(localStorage.getItem('user') || '{}');
     const token = localStorage.getItem('token');
 
@@ -37,7 +37,7 @@ function Chat() {
             try {
                 setLoading(true);
                 const data = await chatService.accessRoom(currentSalaId);
-                
+
                 // Mapear mensagens do backend para o formato do frontend
                 const history = data.mensagem.map(m => ({
                     id: m.id,
@@ -48,7 +48,7 @@ function Chat() {
 
                 setMessages(history);
                 setRoomName(data.sala_name);
-                
+
                 // Mapear participantes
                 const participants = data.participantes.map(p => ({
                     id: p.client_id,
@@ -82,7 +82,7 @@ function Chat() {
                 text: msg.content,
                 timestamp: new Date(msg.data).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             };
-            
+
             setMessages(prev => {
                 // Evita duplicatas se a mesma mensagem chegar via WS mais de uma vez
                 if (prev.some(m => m.id === newMsg.id)) return prev;
@@ -91,13 +91,13 @@ function Chat() {
         };
 
         const onConnected = () => {
-            webSocketService.subscribe(`/topic/rooms/${currentSalaId}`, onMessageReceived);
+            webSocketService.subscribe(`/topic/rooms.${currentSalaId}`, onMessageReceived);
         };
 
         webSocketService.connect(token, onConnected);
 
         return () => {
-            webSocketService.unsubscribe(`/topic/rooms/${currentSalaId}`);
+            webSocketService.unsubscribe(`/topic/rooms.${currentSalaId}`);
             // webSocketService.disconnect(); // Opcional: manter conectado entre páginas
         };
     }, [currentSalaId, token]);
@@ -130,7 +130,7 @@ function Chat() {
             alert(`Usuário ${inviteeName} convidado com sucesso!`);
             setInviteeName("");
             setIsInviteModalOpen(false);
-            
+
             // Recarregar lista de membros
             const data = await chatService.accessRoom(currentSalaId);
             const participants = data.participantes.map(p => ({
@@ -173,8 +173,8 @@ function Chat() {
                             <span className={styles.chatHeaderSub}>· Canal de comunicação em tempo real</span>
                         </div>
                         <div className={styles.chatHeaderActions}>
-                            <button 
-                                className={styles.headerActionBtn} 
+                            <button
+                                className={styles.headerActionBtn}
                                 title="Convidar Membro"
                                 onClick={() => setIsInviteModalOpen(true)}
                             >

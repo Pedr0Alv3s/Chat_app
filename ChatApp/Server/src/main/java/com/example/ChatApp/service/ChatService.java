@@ -23,37 +23,44 @@ public class ChatService {
     JwtService jwtService;
 
     public ChatService(MensagemRepository mensagemRepository,
-                       ClientRepository clientRepository,
-                       SalaRepository salaRepository,
-                       JwtService jwtService){
+            ClientRepository clientRepository,
+            SalaRepository salaRepository,
+            JwtService jwtService) {
         this.mensagemRepository = mensagemRepository;
         this.clientRepository = clientRepository;
         this.salaRepository = salaRepository;
         this.jwtService = jwtService;
     }
 
-    public MensagemDTO enviar(MensagemRequestDTO dto,Long client_id){
+    public MensagemDTO enviar(MensagemRequestDTO dto, Long client_id) {
 
-        //Pega objeto cliente
-        //Long client_id = jwtService.extractUserId(token);
+        // Pega objeto cliente
         Optional<Client> optionalClient = clientRepository.findById(client_id);
+        if (optionalClient.isEmpty()) {
+            System.err.println("❌ Erro: Cliente ID " + client_id + " nao encontrado no banco.");
+            return null;
+        }
         Client client = optionalClient.get();
 
         // pega objeto sala
         Optional<Sala> optionalSala = salaRepository.findById(dto.getSala_id());
+        if (optionalSala.isEmpty()) {
+            System.err.println("❌ Erro: Sala ID " + dto.getSala_id() + " nao encontrada no banco.");
+            return null;
+        }
         Sala sala = optionalSala.get();
 
-        //Monta mensagem
+        // Monta mensagem
         Mensagem mensagem = new Mensagem();
         mensagem.setContent(dto.getContent());
         mensagem.setClient(client);
         mensagem.setSala(sala);
         mensagem.setData(LocalDateTime.now());
 
-        //Salva mensagem no banco de dados
+        // Salva mensagem no banco de dados
         mensagemRepository.save(mensagem);
 
-        //Monta a resposta
+        // Monta a resposta
         MensagemDTO response = new MensagemDTO();
         response.setId(mensagem.getId());
         response.setCreator_name(mensagem.getClient().getName());

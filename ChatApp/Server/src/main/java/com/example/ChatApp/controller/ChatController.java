@@ -35,7 +35,7 @@ public class ChatController {
         System.out.println(">>> Encaminhando para RabbitMQ: " + dto.getContent() + " na sala: " + dto.getSala_id() + " pelo user " + userId);
         RabbitMQMessageDTO payload = new RabbitMQMessageDTO(userId, dto);
 
-        // Envia para o RabbitMQ
-        rabbitTemplate.convertAndSend(RabbitMQConfig.CHAT_EXCHANGE, RabbitMQConfig.ROUTING_KEY, payload);
+        // Envia para o RabbitMQ (Fila de salvamento)
+        rabbitTemplate.convertAndSend(RabbitMQConfig.CHAT_INCOMING_EXCHANGE, "chat.key", payload);
     }
 }
