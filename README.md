@@ -180,7 +180,7 @@ Para modelos linux:
 ###  Passo 4: Rodando uma instância do Backend (Spring Boot)
 Navegue até a raiz do projeto e execute:
 ```bash
-./gradlew :ChatApp:Server:bootRun --args='--server.port=[porta desejada] ex 8081, 8082
+./gradlew :ChatApp:Server:bootRun --args='--server.port=[porta desejada]' ex 8081, 8082
 ```
 O servidor estará disponível em `http://localhost:8080`.
 
