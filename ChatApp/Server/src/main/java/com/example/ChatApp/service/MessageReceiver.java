@@ -32,8 +32,13 @@ public class MessageReceiver {
             MensagemDTO savedMessage = chatService.enviar(payload.getMensagemRequestDTO(), payload.getUserId());
 
             if (savedMessage != null) {
-                System.out.println(">>> [DB] Sucesso ao salvar. Encaminhando para broadcast...");
-                rabbitTemplate.convertAndSend(RabbitMQConfig.CHAT_BROADCAST_EXCHANGE, "", savedMessage);
+                System.out.println(">>> [DB] Sucesso ao salvar. Realizando broadcast único...");
+                
+                // Em vez de mandar para outro exchange do Rabbit, mandamos direto para o tópico STOMP.
+                // Como usamos Broker Relay, o RabbitMQ cuidará de entregar para todas as instâncias.
+                String destination = "/topic/rooms." + savedMessage.getSala_Id();
+                messagingTemplate.convertAndSend(destination, savedMessage);
+                
             } else {
                 System.err.println(">>> [DB] Erro: ChatService retornou null ao salvar.");
             }
@@ -41,14 +46,5 @@ public class MessageReceiver {
             System.err.println(">>> [ERRO CRÍTICO NO DB LISTENER]: " + e.getMessage());
             e.printStackTrace(); // Isso vai mostrar exatamente onde o código quebrou no seu terminal
         }
-    }
-
-    @RabbitListener(queues = "#{instanceBroadcastQueue.name}")
-    public void receiveAndBroadcast(MensagemDTO msg) {
-        // RabbitMQ recebe o destino completo '/topic/rooms.ID'.
-        String destination = "/topic/rooms." + msg.getSala_Id();
-
-        System.out.println(">>> [WS BROADCAST] Enviando via túnel para: " + destination);
-        messagingTemplate.convertAndSend(destination, msg);
     }
 }
